@@ -12,7 +12,6 @@ import (
 	"crypto/x509"
 	"encoding/binary"
 	"encoding/hex"
-	"errors"
 	"fmt"
 	"github.com/aead/ecdh"
 	"net"
@@ -120,7 +119,7 @@ func (a *DarkStarClient) KeySize() int {
 }
 
 func (a *DarkStarClient) SaltSize() int {
-	return 64
+	return 96
 }
 
 func (a *DarkStarClient) Encrypter(salt []byte) (cipher.AEAD, error) {
@@ -227,10 +226,3 @@ func (a *DarkStarClient) generateServerConfirmationCode(sharedKey []byte, server
 	return h.Sum(nil), nil
 }
 
-func publicKeyToBytes(pubKey crypto.PublicKey) ([]byte, error) {
-	point, ok := pubKey.(ecdh.Point)
-	if !ok {
-		return nil, errors.New("could not convert client public key to point")
-	}
-	return elliptic.MarshalCompressed(elliptic.P256(), point.X, point.Y), nil
-}

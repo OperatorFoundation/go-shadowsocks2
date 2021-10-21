@@ -122,8 +122,7 @@ func (a *DarkStarServer) KeySize() int {
 }
 
 func (a *DarkStarServer) SaltSize() int {
-	// FIXME: w dont know the actual size yet
-	return 64
+	return 96
 }
 
 func (a *DarkStarServer) Encrypter(_ []byte) (cipher.AEAD, error) {
