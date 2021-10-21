@@ -5,11 +5,13 @@ import (
 	"encoding/base64"
 	"flag"
 	"fmt"
+	"github.com/shadowsocks/go-shadowsocks2/darkstar"
 	"io"
 	"log"
 	"net/url"
 	"os"
 	"os/signal"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -91,26 +93,37 @@ func main() {
 		addr := flags.Client
 		cipher := flags.Cipher
 		password := flags.Password
-		var err error
+		var cipherError error
 
 		if strings.HasPrefix(addr, "ss://") {
-			addr, cipher, password, err = parseURL(addr)
-			if err != nil {
-				log.Fatal(err)
+			addr, cipher, password, cipherError = parseURL(addr)
+			if cipherError != nil {
+				log.Fatal(cipherError)
 			}
 		}
 
 		udpAddr := addr
 
-		ciph, err := core.PickCipher(cipher, key, password)
-		if err != nil {
-			log.Fatal(err)
+		var ciph core.Cipher
+
+		if cipher == "DarkStar" {
+			parts := strings.Split(addr, ":")
+			host := parts[0]
+			var port int
+			port, cipherError = strconv.Atoi(parts[1])
+			ciph = darkstar.NewDarkStarClient(password, host, port)
+		} else {
+
+			ciph, cipherError = core.PickCipher(cipher, key, password)
+			if cipherError != nil {
+				log.Fatal(cipherError)
+			}
 		}
 
 		if flags.Plugin != "" {
-			addr, err = startPlugin(flags.Plugin, flags.PluginOpts, addr, false)
-			if err != nil {
-				log.Fatal(err)
+			addr, cipherError = startPlugin(flags.Plugin, flags.PluginOpts, addr, false)
+			if cipherError != nil {
+				log.Fatal(cipherError)
 			}
 		}
 

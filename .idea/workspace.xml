@@ -2,12 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a4bf9d2d-0c46-4366-86d1-8cc68e9c7987" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/darkstar/client.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/darkstar/darkstar_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/darkstar/cipher.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/darkstar/darkstar.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/darkstar/darkstar.go" beforeDir="false" afterPath="$PROJECT_DIR$/darkstar/server.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/cipher.go" beforeDir="false" afterPath="$PROJECT_DIR$/core/cipher.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/darkstar/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/darkstar/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/darkstar/darkstar_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/darkstar/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/darkstar/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,7 +62,17 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Go Test.TestPublicKey in github.com/shadowsocks/go-shadowsocks2/darkstar">
+  <component name="RunManager" selected="Go Build.go build github.com/shadowsocks/go-shadowsocks2">
+    <configuration name="go build github.com/shadowsocks/go-shadowsocks2" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
+      <module name="go-shadowsocks2" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <filePath value="$PROJECT_DIR$" />
+      <package value="github.com/shadowsocks/go-shadowsocks2" />
+      <directory value="$PROJECT_DIR$" />
+      <option name="run" value="false" />
+      <method v="2" />
+    </configuration>
     <configuration name="TestPublicKey in github.com/shadowsocks/go-shadowsocks2/darkstar" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="go-shadowsocks2" />
       <working_directory value="$PROJECT_DIR$/darkstar" />
@@ -83,6 +95,11 @@
       <pattern value="^\QTestServerIdentifier\E$" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Go Build.go build github.com/shadowsocks/go-shadowsocks2" />
+      <item itemvalue="Go Test.TestPublicKey in github.com/shadowsocks/go-shadowsocks2/darkstar" />
+      <item itemvalue="Go Test.TestServerIdentifier in github.com/shadowsocks/go-shadowsocks2/darkstar" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Go Test.TestPublicKey in github.com/shadowsocks/go-shadowsocks2/darkstar" />
@@ -96,16 +113,5 @@
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/shadowaead/stream.go</url>
-          <line>203</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

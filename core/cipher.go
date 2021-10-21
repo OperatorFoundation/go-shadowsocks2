@@ -65,8 +65,6 @@ func PickCipher(name string, key []byte, password string) (Cipher, error) {
 		name = aeadAes128Gcm
 	case "AES-256-GCM":
 		name = aeadAes256Gcm
-	case "DarkStar":
-		name = aeadAes256Gcm
 	}
 
 	if choice, ok := aeadList[name]; ok {
