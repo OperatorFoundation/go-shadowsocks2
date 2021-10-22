@@ -22,7 +22,6 @@ type DarkStarServer struct {
 	serverEphemeralPublicKey   crypto.PublicKey
 	serverEphemeralPrivateKey  crypto.PrivateKey
 	serverIdentifier           []byte
-	serverNonce				   []byte
 	clientEphemeralPublicKey   crypto.PublicKey
 }
 
@@ -40,15 +39,12 @@ func NewDarkStarServer(serverPersistentPrivateKey string, host string, port int)
 		return nil
 	}
 
-	nonce := makeNonce()
-
 	return &DarkStarServer{
 		serverPersistentPublicKey: keyExchange.PublicKey(privateKey),
 		serverPersistentPrivateKey: privateKey,
 		serverEphemeralPublicKey: serverEphemeralPublicKey,
 		serverEphemeralPrivateKey: serverEphemeralPrivateKey,
 		serverIdentifier: serverIdentifier,
-		serverNonce: nonce,
 	}
 }
 
@@ -77,13 +73,6 @@ func (a *DarkStarServer) StreamConn(conn net.Conn) net.Conn {
 		return nil
 	}
 
-	clientNonce := make([]byte, 32)
-	_, nonceReadError := conn.Read(clientNonce)
-	if nonceReadError != nil {
-		return nil
-	}
-
-
 	serverEphemeralPublicKeyData, pubKeyToBytesError := publicKeyToBytes(a.serverEphemeralPublicKey)
 	if pubKeyToBytesError != nil {
 		return nil
@@ -98,19 +87,13 @@ func (a *DarkStarServer) StreamConn(conn net.Conn) net.Conn {
 
 	conn.Write(serverEphemeralPublicKeyData)
 	conn.Write(serverConfirmationCode)
-	conn.Write(a.serverNonce)
 
 	encryptCipher, encryptKeyError := a.Encrypter(sharedKey)
 	if encryptKeyError != nil {
 		return nil
 	}
 
-	decryptCipher, decryptKeyError := a.Decrypter(sharedKey)
-	if decryptKeyError != nil {
-		return nil
-	}
-
-	return NewDarkStarConn(conn, encryptCipher, decryptCipher)
+	return NewDarkStarConn(conn, encryptCipher)
 }
 
 func (a *DarkStarServer) PacketConn(conn net.PacketConn) net.PacketConn {

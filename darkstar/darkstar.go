@@ -3,7 +3,6 @@ package darkstar
 import (
 	"crypto"
 	"crypto/elliptic"
-	"crypto/rand"
 	"errors"
 	"github.com/aead/ecdh"
 )
@@ -19,11 +18,4 @@ func publicKeyToBytes(pubKey crypto.PublicKey) ([]byte, error) {
 		return nil, errors.New("could not convert client public key to point")
 	}
 	return elliptic.MarshalCompressed(elliptic.P256(), point.X, point.Y), nil
-}
-
-func makeNonce() []byte {
-	buffer := make([]byte, 32)
-	rand.Read(buffer)
-
-	return buffer
 }
