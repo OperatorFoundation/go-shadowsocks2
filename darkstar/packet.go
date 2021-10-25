@@ -1,13 +1,11 @@
-package shadowaead
+package darkstar
 
 import (
-	"crypto/rand"
 	"errors"
+	"github.com/OperatorFoundation/go-shadowsocks2/shadowaead"
 	"io"
 	"net"
 	"sync"
-
-	"github.com/OperatorFoundation/go-shadowsocks2/internal"
 )
 
 // ErrShortPacket means that the packet is too short for a valid encrypted packet.
@@ -18,60 +16,45 @@ var _zerononce [128]byte // read-only. 128 bytes is more than enough.
 // Pack encrypts plaintext using Cipher with a randomly generated salt and
 // returns a slice of dst containing the encrypted packet and any error occurred.
 // Ensure len(dst) >= ciph.SaltSize() + len(plaintext) + aead.Overhead().
-func Pack(dst, plaintext []byte, ciph Cipher) ([]byte, error) {
-	saltSize := ciph.SaltSize()
-	salt := dst[:saltSize]
-	if _, err := io.ReadFull(rand.Reader, salt); err != nil {
-		return nil, err
-	}
-
-	aead, err := ciph.Encrypter(salt)
+func Pack(dst, plaintext []byte, ciph shadowaead.Cipher) ([]byte, error) {
+	aead, err := ciph.Encrypter(nil)
 	if err != nil {
 		return nil, err
 	}
-	internal.AddSalt(salt)
 
-	if len(dst) < saltSize+len(plaintext)+aead.Overhead() {
+	if len(dst) < len(plaintext)+aead.Overhead() {
 		return nil, io.ErrShortBuffer
 	}
-	b := aead.Seal(dst[saltSize:saltSize], _zerononce[:aead.NonceSize()], plaintext, nil)
-	return dst[:saltSize+len(b)], nil
+	b := aead.Seal(dst, _zerononce[:aead.NonceSize()], plaintext, nil)
+	return dst[:len(b)], nil
 }
 
 // Unpack decrypts pkt using Cipher and returns a slice of dst containing the decrypted payload and any error occurred.
 // Ensure len(dst) >= len(pkt) - aead.SaltSize() - aead.Overhead().
-func Unpack(dst, pkt []byte, ciph Cipher) ([]byte, error) {
-	saltSize := ciph.SaltSize()
-	if len(pkt) < saltSize {
-		return nil, ErrShortPacket
-	}
-	salt := pkt[:saltSize]
-	aead, err := ciph.Decrypter(salt)
+func Unpack(dst, pkt []byte, ciph shadowaead.Cipher) ([]byte, error) {
+	aead, err := ciph.Decrypter(nil)
 	if err != nil {
 		return nil, err
 	}
-	if internal.CheckSalt(salt) {
-		return nil, ErrRepeatedSalt
-	}
-	if len(pkt) < saltSize+aead.Overhead() {
+	if len(pkt) < aead.Overhead() {
 		return nil, ErrShortPacket
 	}
-	if saltSize+len(dst)+aead.Overhead() < len(pkt) {
+	if len(dst)+aead.Overhead() < len(pkt) {
 		return nil, io.ErrShortBuffer
 	}
-	b, err := aead.Open(dst[:0], _zerononce[:aead.NonceSize()], pkt[saltSize:], nil)
+	b, err := aead.Open(dst[:0], _zerononce[:aead.NonceSize()], pkt, nil)
 	return b, err
 }
 
 type packetConn struct {
 	net.PacketConn
-	Cipher
+	shadowaead.Cipher
 	sync.Mutex
 	buf []byte // write lock
 }
 
 // NewPacketConn wraps a net.PacketConn with cipher
-func NewPacketConn(c net.PacketConn, ciph Cipher) net.PacketConn {
+func NewPacketConn(c net.PacketConn, ciph shadowaead.Cipher) net.PacketConn {
 	const maxPacketSize = 64 * 1024
 	return &packetConn{PacketConn: c, Cipher: ciph, buf: make([]byte, maxPacketSize)}
 }
@@ -101,3 +84,4 @@ func (c *packetConn) ReadFrom(b []byte) (int, net.Addr, error) {
 	copy(b, bb)
 	return len(bb), addr, err
 }
+

@@ -9,7 +9,6 @@ import (
 	"crypto/hmac"
 	"crypto/rand"
 	"crypto/sha256"
-	"crypto/x509"
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
@@ -27,6 +26,25 @@ type DarkStarClient struct {
 	clientEphemeralPublicKey crypto.PublicKey
 }
 
+func NewDarkStarClient(serverPersistentPublicKey string, host string, port int) *DarkStarClient{
+	publicKeyBytes, decodeError := hex.DecodeString(serverPersistentPublicKey)
+	if decodeError != nil {
+		return nil
+	}
+
+	serverPersistentPublicKeyPoint := bytesToPublicKey(publicKeyBytes)
+
+	serverIdentifier := getServerIdentifier(host, port)
+
+	keyExchange := ecdh.Generic(elliptic.P256())
+	clientEphemeralPrivateKey, clientEphemeralPublicKey, keyError := keyExchange.GenerateKey(rand.Reader)
+	if keyError != nil {
+		return nil
+	}
+
+	return &DarkStarClient{serverPersistentPublicKey: serverPersistentPublicKeyPoint, serverIdentifier: serverIdentifier, clientEphemeralPrivateKey: clientEphemeralPrivateKey, clientEphemeralPublicKey: clientEphemeralPublicKey}
+}
+
 func (a *DarkStarClient) StreamConn(conn net.Conn) net.Conn {
 	clientEphemeralPublicKeyBytes, keyError := publicKeyToBytes(a.clientEphemeralPublicKey)
 	if keyError != nil {
@@ -36,6 +54,9 @@ func (a *DarkStarClient) StreamConn(conn net.Conn) net.Conn {
 	if confirmationError != nil {
 		return nil
 	}
+
+	fmt.Println(hex.EncodeToString(clientEphemeralPublicKeyBytes))
+	fmt.Println(hex.EncodeToString(clientConfirmationCode))
 
 	conn.Write(clientEphemeralPublicKeyBytes)
 	conn.Write(clientConfirmationCode)
@@ -75,29 +96,7 @@ func (a *DarkStarClient) StreamConn(conn net.Conn) net.Conn {
 }
 
 func (a *DarkStarClient) PacketConn(conn net.PacketConn) net.PacketConn {
-	panic("packetconn not available in DarkStar mode")
-}
-
-func NewDarkStarClient(serverPersistentPublicKey string, host string, port int) *DarkStarClient{
-	publicKeyBytes, decodeError := hex.DecodeString(serverPersistentPublicKey)
-	if decodeError != nil {
-		return nil
-	}
-
-	cert, certError := x509.ParseCertificate(publicKeyBytes)
-	if certError != nil {
-		return nil
-	}
-	serverPersistentPublicKeyPoint := cert.PublicKey
-	serverIdentifier := getServerIdentifier(host, port)
-
-	keyExchange := ecdh.Generic(elliptic.P256())
-	clientEphemeralPrivateKey, clientEphemeralPublicKey, keyError := keyExchange.GenerateKey(rand.Reader)
-	if keyError != nil {
-		return nil
-	}
-
-	return &DarkStarClient{serverPersistentPublicKey: serverPersistentPublicKeyPoint, serverIdentifier: serverIdentifier, clientEphemeralPrivateKey: clientEphemeralPrivateKey, clientEphemeralPublicKey: clientEphemeralPublicKey}
+	return NewPacketConn(conn, a)
 }
 
 func (a *DarkStarClient) KeySize() int {
@@ -105,23 +104,15 @@ func (a *DarkStarClient) KeySize() int {
 }
 
 func (a *DarkStarClient) SaltSize() int {
-	return 96
+	return 64
 }
 
 func (a *DarkStarClient) Encrypter(salt []byte) (cipher.AEAD, error) {
-	sharedKey, keyError := a.generateSharedKeyClient(salt)
-	if keyError != nil {
-		return nil, keyError
-	}
-	return a.aesGCM(sharedKey)
+	return a.aesGCM(salt)
 }
 
 func (a *DarkStarClient) Decrypter(salt []byte) (cipher.AEAD, error) {
-	sharedKey, keyError := a.generateSharedKeyClient(salt)
-	if keyError != nil {
-		return nil, keyError
-	}
-	return a.aesGCM(sharedKey)
+	return a.aesGCM(salt)
 }
 
 func (a *DarkStarClient) aesGCM(key []byte) (cipher.AEAD, error) {
@@ -184,6 +175,11 @@ func (a *DarkStarClient) generateClientConfirmationCode() ([]byte, error) {
 	if clientKeyError != nil {
 		return nil, clientKeyError
 	}
+
+	fmt.Printf("(client confirmation) ecdh: %s\n", hex.EncodeToString(ecdh))
+	fmt.Printf("(client confirmation) serverIdentifier: %s\n", hex.EncodeToString(a.serverIdentifier))
+	fmt.Printf("(client confirmation) SPPubKey: %s\n", hex.EncodeToString(serverPersistentPublicKeyData))
+	fmt.Printf("(client confirmation) CEPubKey: %s\n", hex.EncodeToString(clientEphemeralPublicKeyData))
 
 	h := sha256.New()
 	h.Write(ecdh)

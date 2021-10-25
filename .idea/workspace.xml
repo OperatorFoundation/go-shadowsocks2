@@ -1,7 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="a4bf9d2d-0c46-4366-86d1-8cc68e9c7987" name="Default Changelist" comment="" />
+    <list default="true" id="a4bf9d2d-0c46-4366-86d1-8cc68e9c7987" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/darkstar/packet.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/cipher.go" beforeDir="false" afterPath="$PROJECT_DIR$/core/cipher.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/darkstar/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/darkstar/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/darkstar/darkstar.go" beforeDir="false" afterPath="$PROJECT_DIR$/darkstar/darkstar.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/darkstar/darkstar_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/darkstar/darkstar_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/bloomring_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/bloomring_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shadowaead/packet.go" beforeDir="false" afterPath="$PROJECT_DIR$/shadowaead/packet.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shadowaead/stream.go" beforeDir="false" afterPath="$PROJECT_DIR$/shadowaead/stream.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tcp.go" beforeDir="false" afterPath="$PROJECT_DIR$/tcp.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tcp_darwin.go" beforeDir="false" afterPath="$PROJECT_DIR$/tcp_darwin.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tcp_linux.go" beforeDir="false" afterPath="$PROJECT_DIR$/tcp_linux.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/udp.go" beforeDir="false" afterPath="$PROJECT_DIR$/udp.go" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -14,7 +32,7 @@
       </list>
     </option>
   </component>
-  <component name="GOROOT" path="$PROJECT_DIR$/../go/go1.15.3" />
+  <component name="GOROOT" url="file://$PROJECT_DIR$/../go/go1.17.2" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -32,7 +50,9 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="go.formatter.settings.were.checked" value="true" />
     <property name="go.import.settings.migrated" value="true" />
+    <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/darkstar" />
@@ -44,6 +64,7 @@
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="settings.editor.selected.configurable" value="go.sdk" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -53,36 +74,70 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Go Build.go build github.com/shadowsocks/go-shadowsocks2">
+  <component name="RunManager" selected="Go Test.TestDarkStarClient in github.com/OperatorFoundation/go-shadowsocks2/darkstar">
     <configuration name="go build github.com/shadowsocks/go-shadowsocks2" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
       <module name="go-shadowsocks2" />
       <working_directory value="$PROJECT_DIR$" />
       <kind value="PACKAGE" />
-      <filePath value="$PROJECT_DIR$" />
       <package value="github.com/shadowsocks/go-shadowsocks2" />
       <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
       <option name="run" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestDarkStar in github.com/OperatorFoundation/go-shadowsocks2/darkstar" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="go-shadowsocks2" />
+      <working_directory value="$PROJECT_DIR$/darkstar" />
+      <kind value="PACKAGE" />
+      <package value="github.com/OperatorFoundation/go-shadowsocks2/darkstar" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestDarkStar\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestDarkStarClient in github.com/OperatorFoundation/go-shadowsocks2/darkstar" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="go-shadowsocks2" />
+      <working_directory value="$PROJECT_DIR$/darkstar" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/OperatorFoundation/go-shadowsocks2/darkstar" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestDarkStarClient\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestKeyGen in github.com/OperatorFoundation/go-shadowsocks2/darkstar" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="go-shadowsocks2" />
+      <working_directory value="$PROJECT_DIR$/darkstar" />
+      <kind value="PACKAGE" />
+      <package value="github.com/OperatorFoundation/go-shadowsocks2/darkstar" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestKeyGen\E$" />
       <method v="2" />
     </configuration>
     <configuration name="TestPublicKey in github.com/shadowsocks/go-shadowsocks2/darkstar" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="go-shadowsocks2" />
       <working_directory value="$PROJECT_DIR$/darkstar" />
-      <framework value="gotest" />
       <kind value="PACKAGE" />
       <package value="github.com/shadowsocks/go-shadowsocks2/darkstar" />
       <directory value="$PROJECT_DIR$" />
       <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
       <pattern value="^\QTestPublicKey\E$" />
       <method v="2" />
     </configuration>
     <configuration name="TestServerIdentifier in github.com/shadowsocks/go-shadowsocks2/darkstar" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="go-shadowsocks2" />
       <working_directory value="$PROJECT_DIR$/darkstar" />
-      <framework value="gotest" />
       <kind value="PACKAGE" />
       <package value="github.com/shadowsocks/go-shadowsocks2/darkstar" />
       <directory value="$PROJECT_DIR$" />
       <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
       <pattern value="^\QTestServerIdentifier\E$" />
       <method v="2" />
     </configuration>
@@ -90,9 +145,15 @@
       <item itemvalue="Go Build.go build github.com/shadowsocks/go-shadowsocks2" />
       <item itemvalue="Go Test.TestPublicKey in github.com/shadowsocks/go-shadowsocks2/darkstar" />
       <item itemvalue="Go Test.TestServerIdentifier in github.com/shadowsocks/go-shadowsocks2/darkstar" />
+      <item itemvalue="Go Test.TestKeyGen in github.com/OperatorFoundation/go-shadowsocks2/darkstar" />
+      <item itemvalue="Go Test.TestDarkStar in github.com/OperatorFoundation/go-shadowsocks2/darkstar" />
+      <item itemvalue="Go Test.TestDarkStarClient in github.com/OperatorFoundation/go-shadowsocks2/darkstar" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Test.TestDarkStarClient in github.com/OperatorFoundation/go-shadowsocks2/darkstar" />
+        <item itemvalue="Go Test.TestDarkStar in github.com/OperatorFoundation/go-shadowsocks2/darkstar" />
+        <item itemvalue="Go Test.TestKeyGen in github.com/OperatorFoundation/go-shadowsocks2/darkstar" />
         <item itemvalue="Go Test.TestPublicKey in github.com/shadowsocks/go-shadowsocks2/darkstar" />
         <item itemvalue="Go Test.TestServerIdentifier in github.com/shadowsocks/go-shadowsocks2/darkstar" />
       </list>
@@ -104,5 +165,26 @@
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/darkstar/packet.go</url>
+          <line>19</line>
+          <option name="timeStamp" value="28" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/darkstar/packet.go</url>
+          <line>34</line>
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/main.go</url>
+          <line>113</line>
+          <option name="timeStamp" value="30" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
