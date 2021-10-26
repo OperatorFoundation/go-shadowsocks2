@@ -30,6 +30,7 @@ const (
 	aeadAes128Gcm        = "AEAD_AES_128_GCM"
 	aeadAes256Gcm        = "AEAD_AES_256_GCM"
 	aeadChacha20Poly1305 = "AEAD_CHACHA20_POLY1305"
+	darkStar             = "DarkStar"
 )
 
 // List of AEAD ciphers: key size in bytes and constructor
@@ -48,6 +49,9 @@ func ListCipher() []string {
 	for k := range aeadList {
 		l = append(l, k)
 	}
+
+	l = append(l, "DarkStar")
+
 	sort.Strings(l)
 	return l
 }

@@ -180,7 +180,18 @@ func main() {
 			}
 		}
 
-		ciph, err := core.PickCipher(cipher, key, password)
+		var ciph core.Cipher
+		if cipher == "DarkStar" {
+			parts := strings.Split(addr, ":")
+			host := parts[0]
+			var port int
+			port, err = strconv.Atoi(parts[1])
+			ciph = darkstar.NewDarkStarServer(password, host, port)
+			err = nil
+		} else {
+			ciph, err = core.PickCipher(cipher, key, password)
+		}
+
 		if err != nil {
 			log.Fatal(err)
 		}
