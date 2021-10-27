@@ -106,3 +106,32 @@ func TestDarkStarClient(t *testing.T) {
 
 	assert.Equal(t, "test", testString, "test string didnt match")
 }
+
+func TestDarkStarServer(t *testing.T)  {
+	privateKeyHex := "dd5e9e88d13e66017eb2087b128c1009539d446208f86173e30409a898ada148"
+	addr := "127.0.0.1:1234"
+	server := NewDarkStarServer(privateKeyHex, "127.0.0.1", 1234)
+	doneChannel := make(chan bool)
+
+	l, err := net.Listen("tcp", addr)
+	if err != nil {
+		t.Fail()
+	}
+
+	go func() {
+		for {
+			c, err := l.Accept()
+			if err != nil {
+				t.Fail()
+			}
+
+			darkStarConn := server.StreamConn(c)
+			darkStarConn.Write([]byte("test"))
+			darkStarConn.Close()
+			doneChannel <- true
+		}
+	}()
+
+	done :=  <- doneChannel
+	assert.True(t, done)
+}
