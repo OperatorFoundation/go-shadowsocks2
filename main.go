@@ -1,11 +1,14 @@
 package main
 
 import (
+	"crypto/elliptic"
 	"crypto/rand"
 	"encoding/base64"
+	"encoding/hex"
 	"flag"
 	"fmt"
 	"github.com/OperatorFoundation/go-shadowsocks2/darkstar"
+	"github.com/aead/ecdh"
 	"io"
 	"log"
 	"net/url"
@@ -69,10 +72,32 @@ func main() {
 	flag.Parse()
 
 	if flags.Keygen > 0 {
-		key := make([]byte, flags.Keygen)
-		io.ReadFull(rand.Reader, key)
-		fmt.Println(base64.URLEncoding.EncodeToString(key))
-		return
+		if flags.Cipher == "DarkStar" {
+			keyExchange := ecdh.Generic(elliptic.P256())
+			serverPersistentPrivateKey, serverPersistentPublicKey, keyError := keyExchange.GenerateKey(rand.Reader)
+			if keyError != nil {
+				return
+			}
+
+			serverPersistentPublicKeyBytes, byteError := darkstar.PublicKeyToBytes(serverPersistentPublicKey)
+			if byteError != nil {
+				return
+			}
+			serverPersistentPrivateKeyBytes := serverPersistentPrivateKey.([]byte)
+
+			serverPersistentPublicKeyHex := hex.EncodeToString(serverPersistentPublicKeyBytes)
+			serverPersistentPrivateKeyHex := hex.EncodeToString(serverPersistentPrivateKeyBytes)
+
+			// FIXME: printing the keys might not be what we want
+			fmt.Printf("Server Persistent Public Key: %s\n", serverPersistentPublicKeyHex)
+			fmt.Printf("Server Persistent Private Key: %s\n", serverPersistentPrivateKeyHex)
+			return
+		} else {
+			key := make([]byte, flags.Keygen)
+			io.ReadFull(rand.Reader, key)
+			fmt.Println(base64.URLEncoding.EncodeToString(key))
+			return
+		}
 	}
 
 	if flags.Client == "" && flags.Server == "" {

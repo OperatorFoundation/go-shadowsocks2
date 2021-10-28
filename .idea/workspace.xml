@@ -6,7 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="a4bf9d2d-0c46-4366-86d1-8cc68e9c7987" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/darkstar/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/darkstar/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/darkstar/darkstar.go" beforeDir="false" afterPath="$PROJECT_DIR$/darkstar/darkstar.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/darkstar/darkstar_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/darkstar/darkstar_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/darkstar/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/darkstar/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,7 +66,17 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Go Test.TestDarkStarServer in github.com/OperatorFoundation/go-shadowsocks2/darkstar">
+  <component name="RunManager" selected="Go Build.runClient">
+    <configuration name="generateKeys" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="go-shadowsocks2" />
+      <working_directory value="$PROJECT_DIR$" />
+      <parameters value="-keygen 32 -cipher DarkStar" />
+      <kind value="PACKAGE" />
+      <package value="github.com/OperatorFoundation/go-shadowsocks2" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
     <configuration name="go build github.com/shadowsocks/go-shadowsocks2" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
       <module name="go-shadowsocks2" />
       <working_directory value="$PROJECT_DIR$" />
@@ -71,6 +85,26 @@
       <directory value="$PROJECT_DIR$" />
       <filePath value="$PROJECT_DIR$" />
       <option name="run" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration name="runClient" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="go-shadowsocks2" />
+      <working_directory value="$PROJECT_DIR$" />
+      <parameters value="-c 127.0.0.1:1234 -cipher DarkStar -socks 127.0.0.1:8888 -password f07c4fbdf1b2f83a11f23093281de6ca217e147da7a57ad52e84295fc6908dc0" />
+      <kind value="PACKAGE" />
+      <package value="github.com/OperatorFoundation/go-shadowsocks2" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="runServer" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="go-shadowsocks2" />
+      <working_directory value="$PROJECT_DIR$" />
+      <parameters value="-s 127.0.0.1:1234 -cipher DarkStar -password 167f1a9448c0a800cca16160c27ec8d0776dd09e4923fa6964bd1f0a5058dea4" />
+      <kind value="PACKAGE" />
+      <package value="github.com/OperatorFoundation/go-shadowsocks2" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
     <configuration name="TestDarkStar in github.com/OperatorFoundation/go-shadowsocks2/darkstar" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
@@ -131,6 +165,9 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Go Build.generateKeys" />
+      <item itemvalue="Go Build.runServer" />
+      <item itemvalue="Go Build.runClient" />
       <item itemvalue="Go Build.go build github.com/shadowsocks/go-shadowsocks2" />
       <item itemvalue="Go Test.TestPublicKey in github.com/shadowsocks/go-shadowsocks2/darkstar" />
       <item itemvalue="Go Test.TestKeyGen in github.com/OperatorFoundation/go-shadowsocks2/darkstar" />
@@ -167,11 +204,6 @@
           <url>file://$PROJECT_DIR$/darkstar/packet.go</url>
           <line>34</line>
           <option name="timeStamp" value="29" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/main.go</url>
-          <line>113</line>
-          <option name="timeStamp" value="30" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

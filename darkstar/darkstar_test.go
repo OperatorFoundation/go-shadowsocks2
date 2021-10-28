@@ -23,7 +23,7 @@ func TestKeyGen(t *testing.T) {
 		t.Fail()
 	}
 
-	publicKeyBytes, keyByteError := publicKeyToBytes(clientEphemeralPublicKeyPoint)
+	publicKeyBytes, keyByteError := PublicKeyToBytes(clientEphemeralPublicKeyPoint)
 	if keyByteError != nil {
 		t.Fail()
 	}
