@@ -12,7 +12,7 @@ func bytesToPublicKey(bytes []byte) crypto.PublicKey{
 	copy(publicKeyBuffer[1:], bytes)
 	publicKeyBuffer[0] = 3
 	PublicKeyX, PublicKeyY := elliptic.UnmarshalCompressed(elliptic.P256(), publicKeyBuffer)
-	return ecdh.Point{PublicKeyX, PublicKeyY}
+	return ecdh.Point{X: PublicKeyX, Y: PublicKeyY}
 }
 
 func PublicKeyToBytes(pubKey crypto.PublicKey) ([]byte, error) {

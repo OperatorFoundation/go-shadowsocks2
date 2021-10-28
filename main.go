@@ -94,7 +94,10 @@ func main() {
 			return
 		} else {
 			key := make([]byte, flags.Keygen)
-			io.ReadFull(rand.Reader, key)
+			_, readError := io.ReadFull(rand.Reader, key)
+			if readError != nil {
+				return
+			}
 			fmt.Println(base64.URLEncoding.EncodeToString(key))
 			return
 		}
