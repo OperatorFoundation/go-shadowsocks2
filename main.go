@@ -48,12 +48,13 @@ func main() {
 		TCP        bool
 		Plugin     string
 		PluginOpts string
+		KeyFile    string
 	}
 
 	flag.BoolVar(&config.Verbose, "verbose", false, "verbose mode")
 	flag.StringVar(&flags.Cipher, "cipher", "AEAD_CHACHA20_POLY1305", "available ciphers: "+strings.Join(core.ListCipher(), " "))
 	flag.StringVar(&flags.Key, "key", "", "base64url-encoded key (derive from password if empty)")
-	flag.IntVar(&flags.Keygen, "keygen", 0, "generate a base64url-encoded random key of given length in byte")
+	flag.IntVar(&flags.Keygen, "keygen", 0, "generate a random key of given length in byte")
 	flag.StringVar(&flags.Password, "password", "", "password")
 	flag.StringVar(&flags.Server, "s", "", "server listen address or url")
 	flag.StringVar(&flags.Client, "c", "", "client connect address or url")
@@ -69,6 +70,7 @@ func main() {
 	flag.BoolVar(&flags.TCP, "tcp", true, "(server-only) enable TCP support")
 	flag.BoolVar(&config.TCPCork, "tcpcork", false, "coalesce writing first few packets")
 	flag.DurationVar(&config.UDPTimeout, "udptimeout", 5*time.Minute, "UDP tunnel timeout")
+	flag.StringVar(&flags.KeyFile, "keyfile", "", "Loads the server's persistent public key (client) or private key (server)")
 	flag.Parse()
 
 	if flags.Keygen > 0 {
@@ -86,11 +88,19 @@ func main() {
 			serverPersistentPrivateKeyBytes := serverPersistentPrivateKey.([]byte)
 
 			serverPersistentPublicKeyHex := hex.EncodeToString(serverPersistentPublicKeyBytes)
-			serverPersistentPrivateKeyHex := hex.EncodeToString(serverPersistentPrivateKeyBytes)
 
-			// FIXME: printing the keys might not be what we want
-			fmt.Printf("Server Persistent Public Key: %s\n", serverPersistentPublicKeyHex)
-			fmt.Printf("Server Persistent Private Key: %s\n", serverPersistentPrivateKeyHex)
+			writeError := os.WriteFile("DarkStarServer.priv", serverPersistentPrivateKeyBytes, 0600)
+			if writeError != nil {
+				return
+			}
+			writeError = os.WriteFile("DarkStarServer.pub", []byte(serverPersistentPublicKeyHex), 0644)
+			if writeError != nil {
+				return
+			}
+
+			fmt.Println("server private key written to DarkStarServer.priv")
+			fmt.Println("server public key written to DarkStarServer.pub")
+
 			return
 		} else {
 			key := make([]byte, flags.Keygen)
@@ -117,6 +127,29 @@ func main() {
 		key = k
 	}
 
+	if flags.KeyFile != "" {
+		if flags.Client != "" {
+			publicKeyBytes, publicKeyReadError := os.ReadFile(flags.KeyFile)
+			if publicKeyReadError != nil {
+				return
+			}
+
+			decodedKey, decodeError := hex.DecodeString(string(publicKeyBytes))
+			if decodeError != nil {
+				return
+			}
+
+			key = decodedKey
+		} else {
+			privateKeyBytes, privateKeyReadError := os.ReadFile(flags.KeyFile)
+			if privateKeyReadError != nil {
+				return
+			}
+
+			key = privateKeyBytes
+		}
+	}
+
 	if flags.Client != "" { // client mode
 		addr := flags.Client
 		cipher := flags.Cipher
@@ -139,7 +172,8 @@ func main() {
 			host := parts[0]
 			var port int
 			port, cipherError = strconv.Atoi(parts[1])
-			ciph = darkstar.NewDarkStarClient(password, host, port)
+			keyHex := hex.EncodeToString(key)
+			ciph = darkstar.NewDarkStarClient(keyHex, host, port)
 		} else {
 
 			ciph, cipherError = core.PickCipher(cipher, key, password)
@@ -214,7 +248,8 @@ func main() {
 			host := parts[0]
 			var port int
 			port, err = strconv.Atoi(parts[1])
-			ciph = darkstar.NewDarkStarServer(password, host, port)
+			keyHex := hex.EncodeToString(key)
+			ciph = darkstar.NewDarkStarServer(keyHex, host, port)
 			err = nil
 		} else {
 			ciph, err = core.PickCipher(cipher, key, password)
