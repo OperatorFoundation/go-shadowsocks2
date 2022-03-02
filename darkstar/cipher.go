@@ -192,13 +192,14 @@ func increment(b []byte) {
 
 type darkStarStreamConn struct {
 	net.Conn
-	cipher cipher.AEAD
-	r      *reader
-	w      *writer
+	encryptCipher cipher.AEAD
+	decryptCipher cipher.AEAD
+	r             *reader
+	w             *writer
 }
 
 func (c *darkStarStreamConn) initReader() error {
-	c.r = newReader(c.Conn, c.cipher)
+	c.r = newReader(c.Conn, c.decryptCipher)
 	return nil
 }
 
@@ -221,7 +222,7 @@ func (c *darkStarStreamConn) WriteTo(w io.Writer) (int64, error) {
 }
 
 func (c *darkStarStreamConn) initWriter() error {
-	c.w = newWriter(c.Conn, c.cipher)
+	c.w = newWriter(c.Conn, c.encryptCipher)
 	return nil
 }
 
@@ -244,5 +245,6 @@ func (c *darkStarStreamConn) ReadFrom(r io.Reader) (int64, error) {
 }
 
 // NewConn wraps a stream-oriented net.Conn with cipher.
-func NewDarkStarConn(c net.Conn, cipher cipher.AEAD) net.Conn { return &darkStarStreamConn{Conn: c, cipher: cipher} }
-
+func NewDarkStarConn(c net.Conn, encryptCipher cipher.AEAD, decryptCipher cipher.AEAD) net.Conn {
+	return &darkStarStreamConn{Conn: c, encryptCipher: encryptCipher, decryptCipher: decryptCipher}
+}

@@ -20,12 +20,12 @@ const confirmationCodeSize = 32
 
 type DarkStarClient struct {
 	serverPersistentPublicKey crypto.PublicKey
-	serverIdentifier []byte
+	serverIdentifier          []byte
 	clientEphemeralPrivateKey crypto.PrivateKey
-	clientEphemeralPublicKey crypto.PublicKey
+	clientEphemeralPublicKey  crypto.PublicKey
 }
 
-func NewDarkStarClient(serverPersistentPublicKey string, host string, port int) *DarkStarClient{
+func NewDarkStarClient(serverPersistentPublicKey string, host string, port int) *DarkStarClient {
 	publicKeyBytes, decodeError := hex.DecodeString(serverPersistentPublicKey)
 	if decodeError != nil {
 		return nil
@@ -94,7 +94,12 @@ func (a *DarkStarClient) StreamConn(conn net.Conn) net.Conn {
 		return nil
 	}
 
-	return NewDarkStarConn(conn, encryptCipher)
+	decryptCipher, decryptKeyError := a.Encrypter(sharedKey)
+	if decryptKeyError != nil {
+		return nil
+	}
+
+	return NewDarkStarConn(conn, encryptCipher, decryptCipher)
 }
 
 func (a *DarkStarClient) PacketConn(conn net.PacketConn) net.PacketConn {
@@ -154,7 +159,7 @@ func getServerIdentifier(host string, port int) []byte {
 	// we do the below part because host IP in bytes is 16 bytes with padding at the beginning
 	hostBytes := []byte(hostIP)[12:16]
 	portUint := uint16(port)
-	portBuffer := []byte{0,0}
+	portBuffer := []byte{0, 0}
 	binary.BigEndian.PutUint16(portBuffer, portUint)
 	buffer := make([]byte, 0)
 	buffer = append(buffer, hostBytes...)
@@ -202,4 +207,3 @@ func (a *DarkStarClient) generateServerConfirmationCode(sharedKey []byte, server
 
 	return h.Sum(nil), nil
 }
-

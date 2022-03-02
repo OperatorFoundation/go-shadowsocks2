@@ -4,12 +4,11 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a4bf9d2d-0c46-4366-86d1-8cc68e9c7987" name="Default Changelist" comment="">
+    <list default="true" id="a4bf9d2d-0c46-4366-86d1-8cc68e9c7987" name="Default Changelist" comment="Client and server changes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/cipher.go" beforeDir="false" afterPath="$PROJECT_DIR$/core/cipher.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/darkstar/darkstar_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/darkstar/darkstar_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go-shadowsocks2" beforeDir="false" afterPath="$PROJECT_DIR$/go-shadowsocks2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/darkstar/cipher.go" beforeDir="false" afterPath="$PROJECT_DIR$/darkstar/cipher.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/darkstar/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/darkstar/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/darkstar/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/darkstar/server.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -194,6 +193,21 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Client and server changes" />
+    <option name="LAST_COMMIT_MESSAGE" value="Client and server changes" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

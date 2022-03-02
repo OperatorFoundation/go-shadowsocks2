@@ -39,11 +39,11 @@ func NewDarkStarServer(serverPersistentPrivateKey string, host string, port int)
 	}
 
 	return &DarkStarServer{
-		serverPersistentPublicKey: keyExchange.PublicKey(privateKey),
+		serverPersistentPublicKey:  keyExchange.PublicKey(privateKey),
 		serverPersistentPrivateKey: privateKey,
-		serverEphemeralPublicKey: serverEphemeralPublicKey,
-		serverEphemeralPrivateKey: serverEphemeralPrivateKey,
-		serverIdentifier: serverIdentifier,
+		serverEphemeralPublicKey:   serverEphemeralPublicKey,
+		serverEphemeralPrivateKey:  serverEphemeralPrivateKey,
+		serverIdentifier:           serverIdentifier,
 	}
 }
 
@@ -55,7 +55,6 @@ func (a *DarkStarServer) StreamConn(conn net.Conn) net.Conn {
 	}
 
 	a.clientEphemeralPublicKey = bytesToPublicKey(clientEphemeralPublicKeyBuffer)
-
 
 	clientConfirmationCode := make([]byte, confirmationCodeSize)
 	_, confirmationReadError := conn.Read(clientConfirmationCode)
@@ -77,12 +76,17 @@ func (a *DarkStarServer) StreamConn(conn net.Conn) net.Conn {
 		return nil
 	}
 
-	sharedKey, sharedKeyError := a.generateSharedKeyServer()
-	if sharedKeyError != nil {
+	sharedKeyServer, sharedKeyServerError := a.generateSharedKeyServer()
+	if sharedKeyServerError != nil {
 		return nil
 	}
 
-	serverConfirmationCode, _ := a.generateServerConfirmationCode(sharedKey, serverEphemeralPublicKeyData)
+	sharedKeyClient, sharedKeyClientError := a.generateSharedKeyClient()
+	if sharedKeyClientError != nil {
+		return nil
+	}
+
+	serverConfirmationCode, _ := a.generateServerConfirmationCode(sharedKeyServer, serverEphemeralPublicKeyData)
 
 	_, keyWriteError := conn.Write(serverEphemeralPublicKeyData)
 	if keyWriteError != nil {
@@ -94,16 +98,22 @@ func (a *DarkStarServer) StreamConn(conn net.Conn) net.Conn {
 		return nil
 	}
 
-	encryptCipher, encryptKeyError := a.Encrypter(sharedKey)
+	encryptCipher, encryptKeyError := a.Encrypter(sharedKeyClient)
 	if encryptKeyError != nil {
 		return nil
 	}
 
-	return NewDarkStarConn(conn, encryptCipher)
+	decryptCipher, decryptKeyError := a.Decrypter(sharedKeyServer)
+	if decryptKeyError != nil {
+		return nil
+	}
+
+	return NewDarkStarConn(conn, encryptCipher, decryptCipher)
 }
 
 func (a *DarkStarServer) PacketConn(conn net.PacketConn) net.PacketConn {
-	return NewPacketConn(conn, a)}
+	return NewPacketConn(conn, a)
+}
 
 func (a *DarkStarServer) KeySize() int {
 	return 32
@@ -160,6 +170,36 @@ func (a *DarkStarServer) generateSharedKeyServer() ([]byte, error) {
 	h.Write(clientEphemeralPublicKeyData)
 	h.Write(serverEphemeralPublicKeyBytes)
 	h.Write([]byte("DarkStar"))
+	h.Write([]byte("server"))
+
+	return h.Sum(nil), nil
+}
+
+func (a *DarkStarServer) generateSharedKeyClient() ([]byte, error) {
+
+	serverEphemeralPublicKeyBytes, keyError := PublicKeyToBytes(a.serverEphemeralPublicKey)
+	if keyError != nil {
+		return nil, keyError
+	}
+
+	p256 := ecdh.Generic(elliptic.P256())
+
+	ecdh1 := p256.ComputeSecret(a.serverEphemeralPrivateKey, a.clientEphemeralPublicKey)
+	ecdh2 := p256.ComputeSecret(a.serverEphemeralPrivateKey, a.clientEphemeralPublicKey)
+
+	clientEphemeralPublicKeyData, keyToBytesError := PublicKeyToBytes(a.clientEphemeralPublicKey)
+	if keyToBytesError != nil {
+		return nil, keyToBytesError
+	}
+
+	h := sha256.New()
+	h.Write(ecdh1)
+	h.Write(ecdh2)
+	h.Write(a.serverIdentifier)
+	h.Write(clientEphemeralPublicKeyData)
+	h.Write(serverEphemeralPublicKeyBytes)
+	h.Write([]byte("DarkStar"))
+	h.Write([]byte("client"))
 
 	return h.Sum(nil), nil
 }
@@ -169,7 +209,7 @@ func (a *DarkStarServer) getServerIdentifier(host string, port int) []byte {
 	// we do the below part because host IP in bytes is 16 bytes with padding at the beginning
 	hostBytes := []byte(hostIP)[12:16]
 	portUint := uint16(port)
-	portBuffer := []byte{0,0}
+	portBuffer := []byte{0, 0}
 	binary.BigEndian.PutUint16(portBuffer, portUint)
 	buffer := make([]byte, 0)
 	buffer = append(buffer, hostBytes...)
@@ -222,7 +262,7 @@ func (a *DarkStarServer) makeServerIdentifier(host string, port int) []byte {
 	hostIP := net.ParseIP(host)
 	hostBytes := []byte(hostIP.String())
 	portUint := uint16(port)
-	portBuffer := []byte{0,0}
+	portBuffer := []byte{0, 0}
 	binary.BigEndian.PutUint16(portBuffer, portUint)
 
 	h := sha256.New()
