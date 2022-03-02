@@ -27,10 +27,7 @@ type PacketConnCipher interface {
 var ErrCipherNotSupported = errors.New("cipher not supported")
 
 const (
-	aeadAes128Gcm        = "AEAD_AES_128_GCM"
-	aeadAes256Gcm        = "AEAD_AES_256_GCM"
-	aeadChacha20Poly1305 = "AEAD_CHACHA20_POLY1305"
-	darkStar             = "DarkStar"
+	darkStar = "DarkStar"
 )
 
 // List of AEAD ciphers: key size in bytes and constructor
@@ -38,9 +35,7 @@ var aeadList = map[string]struct {
 	KeySize int
 	New     func([]byte) (shadowaead.Cipher, error)
 }{
-	aeadAes128Gcm:        {16, shadowaead.AESGCM},
-	aeadAes256Gcm:        {32, shadowaead.AESGCM},
-	aeadChacha20Poly1305: {32, shadowaead.Chacha20Poly1305},
+	//darkStar: {32, shadowaead.DarkStar},
 }
 
 // ListCipher returns a list of available cipher names sorted alphabetically.
@@ -63,12 +58,8 @@ func PickCipher(name string, key []byte, password string) (Cipher, error) {
 	switch name {
 	case "DUMMY":
 		return &dummy{}, nil
-	case "CHACHA20-IETF-POLY1305":
-		name = aeadChacha20Poly1305
-	case "AES-128-GCM":
-		name = aeadAes128Gcm
-	case "AES-256-GCM":
-		name = aeadAes256Gcm
+	case "DarkStar":
+		name = darkStar
 	}
 
 	if choice, ok := aeadList[name]; ok {

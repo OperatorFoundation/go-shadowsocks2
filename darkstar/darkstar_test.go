@@ -79,6 +79,7 @@ func TestDarkStar(t *testing.T) {
 	}
 }
 
+//old code
 func TestDarkStarClient(t *testing.T) {
 	publicKeyHex := "d089c225ef8cda8d477a586f062b31a756270124d94944e458edf1a9e1e41ed6"
 
@@ -107,7 +108,7 @@ func TestDarkStarClient(t *testing.T) {
 	assert.Equal(t, "test", testString, "test string didnt match")
 }
 
-func TestDarkStarServer(t *testing.T)  {
+func TestDarkStarServer(t *testing.T) {
 	privateKeyHex := "dd5e9e88d13e66017eb2087b128c1009539d446208f86173e30409a898ada148"
 	addr := "127.0.0.1:1234"
 	server := NewDarkStarServer(privateKeyHex, "127.0.0.1", 1234)
@@ -132,6 +133,68 @@ func TestDarkStarServer(t *testing.T)  {
 		}
 	}()
 
-	done :=  <- doneChannel
+	done := <-doneChannel
 	assert.True(t, done)
+}
+
+//new code
+func TestDarkStarClientAndServer(t *testing.T) {
+	//server
+	privateKeyHex := "dd5e9e88d13e66017eb2087b128c1009539d446208f86173e30409a898ada148"
+	addr := "127.0.0.1:1234"
+	server := NewDarkStarServer(privateKeyHex, "127.0.0.1", 1234)
+
+	l, err := net.Listen("tcp", addr)
+	if err != nil {
+		t.Fail()
+		return
+	}
+
+	go func() {
+		for {
+			c, err := l.Accept()
+			if err != nil {
+				t.Fail()
+				return
+			}
+
+			darkStarConn := server.StreamConn(c)
+			darkStarConn.Write([]byte("test"))
+			testBytes := make([]byte, 4)
+			_, readError := darkStarConn.Read(testBytes)
+			if readError != nil {
+				darkStarConn.Close()
+				t.Fail()
+				return
+			}
+			darkStarConn.Close()
+		}
+	}()
+
+	//client
+	publicKeyHex := "d089c225ef8cda8d477a586f062b31a756270124d94944e458edf1a9e1e41ed6"
+
+	client := NewDarkStarClient(publicKeyHex, "127.0.0.1", 1234)
+
+	netConn, dialError := net.Dial("tcp", addr)
+	if dialError != nil {
+		t.Fail()
+		return
+	}
+
+	darkStarConn := client.StreamConn(netConn)
+	testBytes := make([]byte, 4)
+	bytesRead, readError := darkStarConn.Read(testBytes)
+	if readError != nil {
+		assert.Nil(t, readError, "read error: %s", readError)
+		return
+	}
+
+	assert.Equal(t, 4, bytesRead, "read wrong size of bytes")
+
+	testString := string(testBytes)
+
+	assert.Equal(t, "test", testString, "test string didnt match")
+
+	darkStarConn.Write([]byte("test"))
 }
