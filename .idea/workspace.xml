@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a4bf9d2d-0c46-4366-86d1-8cc68e9c7987" name="Default Changelist" comment="Client and server changes">
+    <list default="true" id="a4bf9d2d-0c46-4366-86d1-8cc68e9c7987" name="Default Changelist" comment="Made fixes to server.go">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/darkstar/cipher.go" beforeDir="false" afterPath="$PROJECT_DIR$/darkstar/cipher.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/darkstar/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/darkstar/client.go" afterDir="false" />
@@ -207,7 +207,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Client and server changes" />
-    <option name="LAST_COMMIT_MESSAGE" value="Client and server changes" />
+    <MESSAGE value="Made fixes to server.go" />
+    <option name="LAST_COMMIT_MESSAGE" value="Made fixes to server.go" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

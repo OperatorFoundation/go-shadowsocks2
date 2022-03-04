@@ -6,7 +6,6 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/elliptic"
-	"crypto/hmac"
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/binary"
@@ -66,7 +65,6 @@ func (a *DarkStarServer) StreamConn(conn net.Conn) net.Conn {
 	if confirmationError != nil {
 		return nil
 	}
-
 	if !bytes.Equal(clientConfirmationCode, serverCopyClientConfirmationCode) {
 		return nil
 	}
@@ -76,17 +74,7 @@ func (a *DarkStarServer) StreamConn(conn net.Conn) net.Conn {
 		return nil
 	}
 
-	sharedKeyServer, sharedKeyServerError := a.generateSharedKeyServer()
-	if sharedKeyServerError != nil {
-		return nil
-	}
-
-	sharedKeyClient, sharedKeyClientError := a.generateSharedKeyClient()
-	if sharedKeyClientError != nil {
-		return nil
-	}
-
-	serverConfirmationCode, _ := a.generateServerConfirmationCode(sharedKeyServer, serverEphemeralPublicKeyData)
+	serverConfirmationCode, _ := a.generateServerConfirmationCode()
 
 	_, keyWriteError := conn.Write(serverEphemeralPublicKeyData)
 	if keyWriteError != nil {
@@ -98,12 +86,22 @@ func (a *DarkStarServer) StreamConn(conn net.Conn) net.Conn {
 		return nil
 	}
 
-	encryptCipher, encryptKeyError := a.Encrypter(sharedKeyClient)
+	sharedKeyServerToClient, sharedKeyServerError := a.createServertoClientSharedKey()
+	if sharedKeyServerError != nil {
+		return nil
+	}
+
+	sharedKeyClientToServer, sharedKeyClientError := a.createClientToServerSharedKey()
+	if sharedKeyClientError != nil {
+		return nil
+	}
+
+	encryptCipher, encryptKeyError := a.Encrypter(sharedKeyServerToClient)
 	if encryptKeyError != nil {
 		return nil
 	}
 
-	decryptCipher, decryptKeyError := a.Decrypter(sharedKeyServer)
+	decryptCipher, decryptKeyError := a.Decrypter(sharedKeyClientToServer)
 	if decryptKeyError != nil {
 		return nil
 	}
@@ -123,19 +121,11 @@ func (a *DarkStarServer) SaltSize() int {
 	return 96
 }
 
-func (a *DarkStarServer) Encrypter(_ []byte) (cipher.AEAD, error) {
-	sharedKey, keyError := a.generateSharedKeyServer()
-	if keyError != nil {
-		return nil, keyError
-	}
+func (a *DarkStarServer) Encrypter(sharedKey []byte) (cipher.AEAD, error) {
 	return a.aesGCM(sharedKey)
 }
 
-func (a *DarkStarServer) Decrypter(_ []byte) (cipher.AEAD, error) {
-	sharedKey, keyError := a.generateSharedKeyServer()
-	if keyError != nil {
-		return nil, keyError
-	}
+func (a *DarkStarServer) Decrypter(sharedKey []byte) (cipher.AEAD, error) {
 	return a.aesGCM(sharedKey)
 }
 
@@ -147,7 +137,7 @@ func (a *DarkStarServer) aesGCM(key []byte) (cipher.AEAD, error) {
 	return cipher.NewGCM(blk)
 }
 
-func (a *DarkStarServer) generateSharedKeyServer() ([]byte, error) {
+func (a *DarkStarServer) createServertoClientSharedKey() ([]byte, error) {
 	serverEphemeralPublicKeyBytes, keyError := PublicKeyToBytes(a.serverEphemeralPublicKey)
 	if keyError != nil {
 		return nil, keyError
@@ -170,12 +160,12 @@ func (a *DarkStarServer) generateSharedKeyServer() ([]byte, error) {
 	h.Write(clientEphemeralPublicKeyData)
 	h.Write(serverEphemeralPublicKeyBytes)
 	h.Write([]byte("DarkStar"))
-	h.Write([]byte("server"))
+	h.Write([]byte("client"))
 
 	return h.Sum(nil), nil
 }
 
-func (a *DarkStarServer) generateSharedKeyClient() ([]byte, error) {
+func (a *DarkStarServer) createClientToServerSharedKey() ([]byte, error) {
 
 	serverEphemeralPublicKeyBytes, keyError := PublicKeyToBytes(a.serverEphemeralPublicKey)
 	if keyError != nil {
@@ -183,7 +173,7 @@ func (a *DarkStarServer) generateSharedKeyClient() ([]byte, error) {
 	}
 
 	p256 := ecdh.Generic(elliptic.P256())
-
+	//do we have these mixed up?
 	ecdh1 := p256.ComputeSecret(a.serverEphemeralPrivateKey, a.clientEphemeralPublicKey)
 	ecdh2 := p256.ComputeSecret(a.serverEphemeralPrivateKey, a.clientEphemeralPublicKey)
 
@@ -199,7 +189,7 @@ func (a *DarkStarServer) generateSharedKeyClient() ([]byte, error) {
 	h.Write(clientEphemeralPublicKeyData)
 	h.Write(serverEphemeralPublicKeyBytes)
 	h.Write([]byte("DarkStar"))
-	h.Write([]byte("client"))
+	h.Write([]byte("server"))
 
 	return h.Sum(nil), nil
 }
@@ -218,15 +208,23 @@ func (a *DarkStarServer) getServerIdentifier(host string, port int) []byte {
 	return buffer
 }
 
-func (a *DarkStarServer) generateServerConfirmationCode(sharedKey []byte, serverEphemeralPublicKeyData []byte) ([]byte, error) {
+func (a *DarkStarServer) generateServerConfirmationCode() ([]byte, error) {
+	p256 := ecdh.Generic(elliptic.P256())
+	ecdhSecret := p256.ComputeSecret(a.serverPersistentPrivateKey, a.clientEphemeralPublicKey)
+	serverPersistentPublicKeyData, serverKeyError := PublicKeyToBytes(a.serverPersistentPublicKey)
+	if serverKeyError != nil {
+		return nil, serverKeyError
+	}
+
 	clientEphemeralPublicKeyData, clientKeyError := PublicKeyToBytes(a.clientEphemeralPublicKey)
 	if clientKeyError != nil {
 		return nil, clientKeyError
 	}
 
-	h := hmac.New(sha256.New, sharedKey)
+	h := sha256.New()
+	h.Write(ecdhSecret)
 	h.Write(a.serverIdentifier)
-	h.Write(serverEphemeralPublicKeyData)
+	h.Write(serverPersistentPublicKeyData)
 	h.Write(clientEphemeralPublicKeyData)
 	h.Write([]byte("DarkStar"))
 	h.Write([]byte("server"))
