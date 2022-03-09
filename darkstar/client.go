@@ -154,7 +154,6 @@ func (a *DarkStarClient) createClientToServerSharedKey() ([]byte, error) {
 	h.Write(ecdh1)
 	h.Write(ecdh2)
 	h.Write(a.serverIdentifier)
-	//is it ok that next two lines are flipped from server.go?
 	h.Write(clientEphemeralPublicKeyBytes)
 	h.Write(serverEphemeralPublicKeyData)
 	h.Write([]byte("DarkStar"))
