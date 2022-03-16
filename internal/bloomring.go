@@ -1,19 +1,22 @@
 package internal
 
 import (
-	"hash/fnv"
-	"sync"
-
+	"bytes"
+	"encoding/gob"
 	"github.com/riobard/go-bloom"
+	"hash/fnv"
+	"log"
+	"os"
+	"sync"
 )
 
 // simply use Double FNV here as our Bloom Filter hash
 func doubleFNV(b []byte) (uint64, uint64) {
 	hx := fnv.New64()
-	hx.Write(b)
+	_, _ = hx.Write(b)
 	x := hx.Sum64()
 	hy := fnv.New64a()
-	hy.Write(b)
+	_, _ = hy.Write(b)
 	y := hy.Sum64()
 	return x, y
 }
@@ -27,7 +30,7 @@ type BloomRing struct {
 	mutex        sync.RWMutex
 }
 
-func NewBloomRing(slot, capacity int, falsePositiveRate float64) *BloomRing {
+func NewBloomRing(slot int, capacity int, falsePositiveRate float64) *BloomRing {
 	// Calculate entries for each slot
 	r := &BloomRing{
 		slotCapacity: capacity / slot,
@@ -38,6 +41,56 @@ func NewBloomRing(slot, capacity int, falsePositiveRate float64) *BloomRing {
 		r.slots[i] = bloom.New(r.slotCapacity, falsePositiveRate, doubleFNV)
 	}
 	return r
+}
+
+func LoadBloomRing(filePath string) (*BloomRing, error) {
+
+	data, readError := os.ReadFile(filePath)
+	if readError != nil {
+		return nil, readError
+	}
+
+	buffer := bytes.NewBuffer(data)
+
+	// Create a decoder and receive a value.
+	decoder := gob.NewDecoder(buffer)
+	var ring *BloomRing
+	decodeError := decoder.Decode(ring)
+	if decodeError != nil {
+		log.Fatal("decode:", decodeError)
+		return nil, decodeError
+	}
+
+	return ring, nil
+}
+
+func LoadOrCreateBloomRing(filePath string, slot int, capacity int, falsePositiveRate float64) *BloomRing {
+	ring, loadError := LoadBloomRing(filePath)
+	if loadError != nil {
+		return NewBloomRing(slot, capacity, falsePositiveRate)
+	} else {
+		return ring
+	}
+}
+
+func (r *BloomRing) Save(filePath string) error {
+
+	var buffer bytes.Buffer
+
+	enc := gob.NewEncoder(&buffer)
+	encodeError := enc.Encode(r)
+	if encodeError != nil {
+		log.Fatal("encode:", encodeError)
+		return encodeError
+	}
+
+	data := buffer.Bytes()
+	writeError := os.WriteFile(filePath, data, 0666)
+	if writeError != nil {
+		return writeError
+	}
+
+	return nil
 }
 
 func (r *BloomRing) Add(b []byte) {

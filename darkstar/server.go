@@ -10,8 +10,10 @@ import (
 	"crypto/sha256"
 	"encoding/binary"
 	"encoding/hex"
+	"github.com/OperatorFoundation/go-shadowsocks2/internal"
 	"github.com/aead/ecdh"
 	"net"
+	"time"
 )
 
 type DarkStarServer struct {
@@ -51,6 +53,14 @@ func (a *DarkStarServer) StreamConn(conn net.Conn) net.Conn {
 	_, keyReadError := conn.Read(clientEphemeralPublicKeyBuffer)
 	if keyReadError != nil {
 		return nil
+	}
+
+	if internal.CheckSalt(clientEphemeralPublicKeyBuffer) {
+		return BlackHoleConn{
+			time.NewTimer(time.ParseDuration("30s")),
+		}
+	} else {
+		internal.AddSalt(clientEphemeralPublicKeyBuffer)
 	}
 
 	a.clientEphemeralPublicKey = bytesToPublicKey(clientEphemeralPublicKeyBuffer)

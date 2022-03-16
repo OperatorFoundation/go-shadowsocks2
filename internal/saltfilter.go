@@ -18,6 +18,7 @@ const (
 )
 
 const EnvironmentPrefix = "SHADOWSOCKS_"
+const FilePath = "bloomfilter.gob"
 
 // A shared instance used for checking salt repeat
 var saltfilter *BloomRing
@@ -65,7 +66,7 @@ func getSaltFilterSingleton() *BloomRing {
 		if finalCapacity <= 0 {
 			return
 		}
-		saltfilter = NewBloomRing(int(finalSlot), int(finalCapacity), finalFPR)
+		saltfilter = LoadOrCreateBloomRing(FilePath, int(finalSlot), int(finalCapacity), finalFPR)
 	})
 	return saltfilter
 }
@@ -78,6 +79,7 @@ func TestSalt(b []byte) bool {
 // AddSalt salt to filter
 func AddSalt(b []byte) {
 	getSaltFilterSingleton().Add(b)
+	getSaltFilterSingleton().Save(FilePath)
 }
 
 func CheckSalt(b []byte) bool {
