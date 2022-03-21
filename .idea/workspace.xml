@@ -4,12 +4,10 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a4bf9d2d-0c46-4366-86d1-8cc68e9c7987" name="Default Changelist" comment="Finished audit fixes">
-      <change afterPath="$PROJECT_DIR$/darkstar/black_hole.go" afterDir="false" />
+    <list default="true" id="a4bf9d2d-0c46-4366-86d1-8cc68e9c7987" name="Default Changelist" comment="probing resistance">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/darkstar/black_hole.go" beforeDir="false" afterPath="$PROJECT_DIR$/darkstar/black_hole.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/darkstar/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/darkstar/server.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/bloomring.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/bloomring.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/saltfilter.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/saltfilter.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -210,7 +208,9 @@
     <MESSAGE value="Client and server changes" />
     <MESSAGE value="Made fixes to server.go" />
     <MESSAGE value="Finished audit fixes" />
-    <option name="LAST_COMMIT_MESSAGE" value="Finished audit fixes" />
+    <MESSAGE value="bloom filter and started black hole" />
+    <MESSAGE value="probing resistance" />
+    <option name="LAST_COMMIT_MESSAGE" value="probing resistance" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

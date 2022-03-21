@@ -13,7 +13,6 @@ import (
 	"github.com/OperatorFoundation/go-shadowsocks2/internal"
 	"github.com/aead/ecdh"
 	"net"
-	"time"
 )
 
 type DarkStarServer struct {
@@ -56,9 +55,7 @@ func (a *DarkStarServer) StreamConn(conn net.Conn) net.Conn {
 	}
 
 	if internal.CheckSalt(clientEphemeralPublicKeyBuffer) {
-		return BlackHoleConn{
-			time.NewTimer(time.ParseDuration("30s")),
-		}
+		return NewBlackHoleConn()
 	} else {
 		internal.AddSalt(clientEphemeralPublicKeyBuffer)
 	}
