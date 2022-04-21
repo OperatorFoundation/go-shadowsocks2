@@ -56,8 +56,14 @@ func TestDarkStar(t *testing.T) {
 			}
 
 			darkStarConn := server.StreamConn(c)
-			darkStarConn.Write([]byte("test"))
-			darkStarConn.Close()
+			_, writeError := darkStarConn.Write([]byte("test"))
+			if writeError != nil {
+				return
+			}
+			closeError := darkStarConn.Close()
+			if closeError != nil {
+				return
+			}
 
 		}
 	}()
@@ -71,7 +77,10 @@ func TestDarkStar(t *testing.T) {
 
 	darkStarConn := client.StreamConn(netConn)
 	testBytes := make([]byte, 4)
-	darkStarConn.Read(testBytes)
+	_, readError := darkStarConn.Read(testBytes)
+	if readError != nil {
+		return
+	}
 	testString := string(testBytes)
 
 	if testString != "test" {
@@ -127,8 +136,14 @@ func TestDarkStarServer(t *testing.T) {
 			}
 
 			darkStarConn := server.StreamConn(c)
-			darkStarConn.Write([]byte("test"))
-			darkStarConn.Close()
+			_, writeError := darkStarConn.Write([]byte("test"))
+			if writeError != nil {
+				return
+			}
+			closeError := darkStarConn.Close()
+			if closeError != nil {
+				return
+			}
 			doneChannel <- true
 		}
 	}()
@@ -159,15 +174,24 @@ func TestDarkStarClientAndServer(t *testing.T) {
 			}
 
 			darkStarConn := server.StreamConn(c)
-			darkStarConn.Write([]byte("test"))
+			_, writeError := darkStarConn.Write([]byte("test"))
+			if writeError != nil {
+				return
+			}
 			testBytes := make([]byte, 4)
 			_, readError := darkStarConn.Read(testBytes)
 			if readError != nil {
-				darkStarConn.Close()
+				closeError := darkStarConn.Close()
+				if closeError != nil {
+					return
+				}
 				t.Fail()
 				return
 			}
-			darkStarConn.Close()
+			closeError := darkStarConn.Close()
+			if closeError != nil {
+				return
+			}
 		}
 	}()
 
@@ -196,5 +220,8 @@ func TestDarkStarClientAndServer(t *testing.T) {
 
 	assert.Equal(t, "test", testString, "test string didnt match")
 
-	darkStarConn.Write([]byte("test"))
+	_, writeError := darkStarConn.Write([]byte("test"))
+	if writeError != nil {
+		return
+	}
 }
