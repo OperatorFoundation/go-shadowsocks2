@@ -6,7 +6,6 @@ import (
 	"github.com/OperatorFoundation/go-shadowsocks2/shadowaead"
 	"net"
 	"sort"
-	"strings"
 )
 
 type Cipher interface {
@@ -52,12 +51,12 @@ func ListCipher() []string {
 
 // PickCipher returns a Cipher of the given name. Derive key from password if given key is empty.
 func PickCipher(name string, key []byte, password string) (Cipher, error) {
-	name = strings.ToUpper(name)
+	// name = strings.ToUpper(name)
 
 	switch name {
 	case "DUMMY":
 		return &dummy{}, nil
-	case "DARKSTAR":
+	case "DarkStar":
 		name = darkStar
 	}
 
