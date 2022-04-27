@@ -6,8 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="a4bf9d2d-0c46-4366-86d1-8cc68e9c7987" name="Default Changelist" comment="probing resistance">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/darkstar/black_hole.go" beforeDir="false" afterPath="$PROJECT_DIR$/darkstar/black_hole.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/darkstar/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/darkstar/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/cipher.go" beforeDir="false" afterPath="$PROJECT_DIR$/core/cipher.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,7 +20,7 @@
       </list>
     </option>
   </component>
-  <component name="GOROOT" url="file://$USER_HOME$/sdk/go1.18rc1" />
+  <component name="GOROOT" url="file://$PROJECT_DIR$/../sdk/go1.18rc1" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -68,7 +67,16 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Go Test.TestDarkStarServer in github.com/OperatorFoundation/go-shadowsocks2/darkstar">
+  <component name="RunManager" selected="Go Test.TestDarkStar in github.com/OperatorFoundation/go-shadowsocks2/darkstar">
+    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="go-shadowsocks2" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/OperatorFoundation/go-shadowsocks2" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
     <configuration name="generateKeys" type="GoApplicationRunConfiguration" factoryName="Go Application">
       <module name="go-shadowsocks2" />
       <working_directory value="$PROJECT_DIR$" />
@@ -109,7 +117,7 @@
       <filePath value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
-    <configuration name="TestDarkStarClient in github.com/OperatorFoundation/go-shadowsocks2/darkstar" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+    <configuration name="TestDarkStar in github.com/OperatorFoundation/go-shadowsocks2/darkstar" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="go-shadowsocks2" />
       <working_directory value="$PROJECT_DIR$/darkstar" />
       <root_directory value="$PROJECT_DIR$" />
@@ -118,7 +126,7 @@
       <directory value="$PROJECT_DIR$" />
       <filePath value="$PROJECT_DIR$" />
       <framework value="gotest" />
-      <pattern value="^\QTestDarkStarClient\E$" />
+      <pattern value="^\QTestDarkStar\E$" />
       <method v="2" />
     </configuration>
     <configuration name="TestDarkStarClientAndServer in github.com/OperatorFoundation/go-shadowsocks2/darkstar" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
@@ -157,6 +165,16 @@
       <pattern value="^\QTestKeyGen\E$" />
       <method v="2" />
     </configuration>
+    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
+      <module name="go-shadowsocks2" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="DIRECTORY" />
+      <package value="github.com/OperatorFoundation/go-shadowsocks2" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <method v="2" />
+    </configuration>
     <configuration name="go test github.com/OperatorFoundation/go-shadowsocks2/darkstar" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="go-shadowsocks2" />
       <working_directory value="$PROJECT_DIR$/darkstar" />
@@ -173,19 +191,19 @@
       <item itemvalue="Go Build.runServer" />
       <item itemvalue="Go Build.runClient" />
       <item itemvalue="Go Build.go build github.com/OperatorFoundation/go-shadowsocks2" />
-      <item itemvalue="Go Test.TestDarkStarClient in github.com/OperatorFoundation/go-shadowsocks2/darkstar" />
       <item itemvalue="Go Test.TestDarkStarServer in github.com/OperatorFoundation/go-shadowsocks2/darkstar" />
       <item itemvalue="Go Test.go test github.com/OperatorFoundation/go-shadowsocks2/darkstar" />
       <item itemvalue="Go Test.TestDarkStarClientAndServer in github.com/OperatorFoundation/go-shadowsocks2/darkstar" />
       <item itemvalue="Go Test.TestKeyGen in github.com/OperatorFoundation/go-shadowsocks2/darkstar" />
+      <item itemvalue="Go Test.TestDarkStar in github.com/OperatorFoundation/go-shadowsocks2/darkstar" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Test.TestDarkStar in github.com/OperatorFoundation/go-shadowsocks2/darkstar" />
         <item itemvalue="Go Test.TestDarkStarServer in github.com/OperatorFoundation/go-shadowsocks2/darkstar" />
         <item itemvalue="Go Test.TestDarkStarClientAndServer in github.com/OperatorFoundation/go-shadowsocks2/darkstar" />
         <item itemvalue="Go Test.TestKeyGen in github.com/OperatorFoundation/go-shadowsocks2/darkstar" />
         <item itemvalue="Go Test.go test github.com/OperatorFoundation/go-shadowsocks2/darkstar" />
-        <item itemvalue="Go Test.TestDarkStarClient in github.com/OperatorFoundation/go-shadowsocks2/darkstar" />
       </list>
     </recent_temporary>
   </component>

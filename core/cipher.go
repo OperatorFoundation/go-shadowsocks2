@@ -3,11 +3,9 @@ package core
 import (
 	"crypto/md5"
 	"errors"
+	"github.com/OperatorFoundation/go-shadowsocks2/shadowaead"
 	"net"
 	"sort"
-	"strings"
-
-	"github.com/OperatorFoundation/go-shadowsocks2/shadowaead"
 )
 
 type Cipher interface {
@@ -53,7 +51,7 @@ func ListCipher() []string {
 
 // PickCipher returns a Cipher of the given name. Derive key from password if given key is empty.
 func PickCipher(name string, key []byte, password string) (Cipher, error) {
-	name = strings.ToUpper(name)
+	// name = strings.ToUpper(name)
 
 	switch name {
 	case "DUMMY":
