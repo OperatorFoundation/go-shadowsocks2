@@ -11,7 +11,7 @@ GoDoc at https://godoc.org/github.com/shadowsocks/go-shadowsocks2/
 
 - [x] SOCKS5 proxy with UDP Associate
 - [x] Support for Netfilter TCP redirect on Linux (IPv6 should work but not tested)
-- [x] Support for Packet Filter TCP redirect on MacOS/Darwin (IPv4 only)
+- [x] Support for Packet Filter TCP redirect on macOS/Darwin (IPv4 only)
 - [x] UDP tunneling (e.g. relay DNS packets)
 - [x] TCP tunneling (e.g. benchmark with iperf3)
 - [x] SIP003 plugins
@@ -75,7 +75,7 @@ go-shadowsocks2 -c 'ss://DarkStar:d089c225ef8cda8d477a586f062b31a756270124d94944
 ### TCP tunneling
 
 The client offers `-tcptun [local_addr]:[local_port]=[remote_addr]:[remote_port]` option to tunnel TCP.
-For example it can be used to proxy iperf3 for benchmarking.
+For example, it can be used to proxy iperf3 for benchmarking.
 
 Start iperf3 on the same machine with the server.
 
@@ -123,13 +123,13 @@ UDP connections will not be affected by SIP003.
 
 ### Replay Attack Mitigation
 
-By default a [Bloom filter](https://en.wikipedia.org/wiki/Bloom_filter) is deployed to defend against [replay attacks](https://en.wikipedia.org/wiki/Replay_attack).
+By default, a [Bloom filter](https://en.wikipedia.org/wiki/Bloom_filter) is deployed to defend against [replay attacks](https://en.wikipedia.org/wiki/Replay_attack).
 Use the following environment variables to fine-tune the mechanism:
 
 - `SHADOWSOCKS_SF_CAPACITY`: Number of recent connections to track. Default `1e6` (one million). Setting it to 0 disables the feature.
 - `SHADOWSOCKS_SF_FPR`: False positive rate of the Bloom filter. Default `1e-6` (0.0001%). This should be enough for most cases.
 - `SHADOWSOCKS_SF_SLOT`: The Bloom filter is divided into a number (default `10`) of slots. When the Bloom filter is full, the
-  oldest slot will be cleared for recycling. In general you should not change this number unless you understand what you are doing.
+  oldest slot will be cleared for recycling. In general, you should not change this number unless you understand what you are doing.
 
 ```sh
 SHADOWSOCKS_SF_CAPACITY=1e6 SHADOWSOCKS_SF_FPR=1e-6 SHADOWSOCKS_SF_SLOT=10 go-shadowsocks2 ...
@@ -140,5 +140,5 @@ SHADOWSOCKS_SF_CAPACITY=1e6 SHADOWSOCKS_SF_FPR=1e-6 SHADOWSOCKS_SF_SLOT=10 go-sh
 The code base strives to
 
 - be idiomatic Go and well organized;
-- use fewer external dependences as reasonably possible;
+- use fewer external dependencies as reasonably possible;
 - only include proven modern ciphers;
