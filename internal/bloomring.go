@@ -22,23 +22,23 @@ func doubleFNV(b []byte) (uint64, uint64) {
 }
 
 type BloomRing struct {
-	slotCapacity int
-	slotPosition int
-	slotCount    int
-	entryCounter int
-	slots        []bloom.Filter
+	SlotCapacity int
+	SlotPosition int
+	SlotCount    int
+	EntryCounter int
+	Slots        []bloom.Filter
 	mutex        sync.RWMutex
 }
 
 func NewBloomRing(slot int, capacity int, falsePositiveRate float64) *BloomRing {
 	// Calculate entries for each slot
 	r := &BloomRing{
-		slotCapacity: capacity / slot,
-		slotCount:    slot,
-		slots:        make([]bloom.Filter, slot),
+		SlotCapacity: capacity / slot,
+		SlotCount:    slot,
+		Slots:        make([]bloom.Filter, slot),
 	}
 	for i := 0; i < slot; i++ {
-		r.slots[i] = bloom.New(r.slotCapacity, falsePositiveRate, doubleFNV)
+		r.Slots[i] = bloom.New(r.SlotCapacity, falsePositiveRate, doubleFNV)
 	}
 	return r
 }
@@ -103,15 +103,15 @@ func (r *BloomRing) Add(b []byte) {
 }
 
 func (r *BloomRing) add(b []byte) {
-	slot := r.slots[r.slotPosition]
-	if r.entryCounter > r.slotCapacity {
+	slot := r.Slots[r.SlotPosition]
+	if r.EntryCounter > r.SlotCapacity {
 		// Move to next slot and reset
-		r.slotPosition = (r.slotPosition + 1) % r.slotCount
-		slot = r.slots[r.slotPosition]
+		r.SlotPosition = (r.SlotPosition + 1) % r.SlotCount
+		slot = r.Slots[r.SlotPosition]
 		slot.Reset()
-		r.entryCounter = 0
+		r.EntryCounter = 0
 	}
-	r.entryCounter++
+	r.EntryCounter++
 	slot.Add(b)
 }
 
@@ -126,7 +126,7 @@ func (r *BloomRing) Test(b []byte) bool {
 }
 
 func (r *BloomRing) test(b []byte) bool {
-	for _, s := range r.slots {
+	for _, s := range r.Slots {
 		if s.Test(b) {
 			return true
 		}
