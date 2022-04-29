@@ -3,7 +3,7 @@ package internal
 import (
 	"bytes"
 	"encoding/gob"
-	"github.com/riobard/go-bloom"
+	"github.com/OperatorFoundation/go-bloom"
 	"hash/fnv"
 	"log"
 	"os"
@@ -74,9 +74,10 @@ func LoadOrCreateBloomRing(filePath string, slot int, capacity int, falsePositiv
 }
 
 func (r *BloomRing) Save(filePath string) error {
+	classicFilter := bloom.ClassicFilter{}
+	gob.Register(classicFilter)
 
 	var buffer bytes.Buffer
-
 	enc := gob.NewEncoder(&buffer)
 	encodeError := enc.Encode(r)
 	if encodeError != nil {
