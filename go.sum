@@ -1,5 +1,5 @@
-github.com/OperatorFoundation/go-bloom v1.0.0 h1:LtMlCVIX1mKOp4BcCBLVL/4l/Fy9xfSJ2fbEk+HD+Vo=
-github.com/OperatorFoundation/go-bloom v1.0.0/go.mod h1:b6bJWAnYIhwDgFIIolHyeuTYbPWAYj1Lnnwvcoa7P38=
+github.com/OperatorFoundation/go-bloom v1.0.1 h1:8q/rfgfG7OvwGkmzusIuV8PlS8MvA/T0kQ2MXm9371g=
+github.com/OperatorFoundation/go-bloom v1.0.1/go.mod h1:b6bJWAnYIhwDgFIIolHyeuTYbPWAYj1Lnnwvcoa7P38=
 github.com/aead/ecdh v0.2.0 h1:pYop54xVaq/CEREFEcukHRZfTdjiWvYIsZDXXrBapQQ=
 github.com/aead/ecdh v0.2.0/go.mod h1:a9HHtXuSo8J1Js1MwLQx2mBhkXMT6YwUmVVEY4tTB8U=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=

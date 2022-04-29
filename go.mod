@@ -3,7 +3,7 @@ module github.com/OperatorFoundation/go-shadowsocks2
 go 1.17
 
 require (
-	github.com/OperatorFoundation/go-bloom v1.0.0
+	github.com/OperatorFoundation/go-bloom v1.0.1
 	github.com/aead/ecdh v0.2.0
 	github.com/stretchr/testify v1.7.0
 )
