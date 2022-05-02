@@ -225,3 +225,21 @@ func TestDarkStarClientAndServer(t *testing.T) {
 		return
 	}
 }
+
+func TestKeys(t *testing.T) {
+	privateKeyHex := "dd5e9e88d13e66017eb2087b128c1009539d446208f86173e30409a898ada148"
+	publicKeyHex := "d089c225ef8cda8d477a586f062b31a756270124d94944e458edf1a9e1e41ed6"
+
+	publicKeyDecode, _ := hex.DecodeString(publicKeyHex)
+	publicKey := bytesToPublicKey(publicKeyDecode)
+	privateKey, _ := hex.DecodeString(privateKeyHex)
+	keyExchange := ecdh.Generic(elliptic.P256())
+	publicKey2 := keyExchange.PublicKey(privateKey)
+	publicKey2Bytes, _ := PublicKeyToBytes(publicKey2)
+	publicKey2String := hex.EncodeToString(publicKey2Bytes)
+	publicKey3, _ := PublicKeyToBytes(publicKey)
+	publicKey3Hex := hex.EncodeToString(publicKey3)
+
+	assert.Equal(t, publicKeyHex, publicKey2String)
+	assert.Equal(t, publicKey3Hex, publicKeyHex)
+}

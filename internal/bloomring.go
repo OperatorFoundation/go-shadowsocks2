@@ -54,17 +54,19 @@ func LoadBloomRing(filePath string) (*BloomRing, error) {
 
 	// Create a decoder and receive a value.
 	decoder := gob.NewDecoder(buffer)
-	var ring *BloomRing
-	decodeError := decoder.Decode(ring)
+	var ring BloomRing
+	decodeError := decoder.Decode(&ring)
 	if decodeError != nil {
 		log.Fatal("decode:", decodeError)
 		return nil, decodeError
 	}
 
-	return ring, nil
+	return &ring, nil
 }
 
 func LoadOrCreateBloomRing(filePath string, slot int, capacity int, falsePositiveRate float64) *BloomRing {
+	classicFilter := bloom.ClassicFilter{}
+	gob.RegisterName("github.com/OperatorFoundation/go-bloom.ClassicFilter", &classicFilter)
 	ring, loadError := LoadBloomRing(filePath)
 	if loadError != nil {
 		return NewBloomRing(slot, capacity, falsePositiveRate)
@@ -74,9 +76,6 @@ func LoadOrCreateBloomRing(filePath string, slot int, capacity int, falsePositiv
 }
 
 func (r *BloomRing) Save(filePath string) error {
-	classicFilter := bloom.ClassicFilter{}
-	gob.Register(classicFilter)
-
 	var buffer bytes.Buffer
 	enc := gob.NewEncoder(&buffer)
 	encodeError := enc.Encode(r)
