@@ -61,6 +61,14 @@ func LoadBloomRing(filePath string) (*BloomRing, error) {
 		return nil, decodeError
 	}
 
+	for i := 0; i < len(ring.Slots); i++ {
+		slot := ring.Slots[i]
+		filter, ok := slot.(*bloom.ClassicFilter)
+		if ok {
+			filter.H = doubleFNV
+		}
+	}
+
 	return &ring, nil
 }
 

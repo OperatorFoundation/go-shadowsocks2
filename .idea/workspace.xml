@@ -6,8 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="a4bf9d2d-0c46-4366-86d1-8cc68e9c7987" name="Default Changelist" comment="probing resistance">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/darkstar/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/darkstar/client.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/darkstar/darkstar_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/darkstar/darkstar_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/darkstar/bloomfilter.gob" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/darkstar/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/darkstar/server.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/bloomring.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/bloomring.go" afterDir="false" />
     </list>
@@ -241,16 +240,6 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/internal/bloomring.go</url>
-          <line>137</line>
-          <option name="timeStamp" value="20" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/internal/bloomring.go</url>
-          <line>118</line>
-          <option name="timeStamp" value="22" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/../go/pkg/mod/github.com/aead/ecdh@v0.2.0/generic.go</url>
           <line>74</line>
           <option name="timeStamp" value="26" />
@@ -289,6 +278,11 @@
           <url>file://$PROJECT_DIR$/darkstar/client.go</url>
           <line>139</line>
           <option name="timeStamp" value="38" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/../go/pkg/mod/github.com/!operator!foundation/go-bloom@v1.0.1/filter.go</url>
+          <line>25</line>
+          <option name="timeStamp" value="41" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

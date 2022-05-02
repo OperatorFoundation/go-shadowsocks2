@@ -10,6 +10,7 @@ import (
 	"crypto/sha256"
 	"encoding/binary"
 	"encoding/hex"
+	"github.com/OperatorFoundation/go-shadowsocks2/internal"
 	"github.com/aead/ecdh"
 	"net"
 )
@@ -53,12 +54,11 @@ func (a *DarkStarServer) StreamConn(conn net.Conn) net.Conn {
 		return nil
 	}
 
-	//FIXME: ReImplement later
-	//if internal.CheckSalt(clientEphemeralPublicKeyBuffer) {
-	//	return NewBlackHoleConn()
-	//} else {
-	//	internal.AddSalt(clientEphemeralPublicKeyBuffer)
-	//}
+	if internal.CheckSalt(clientEphemeralPublicKeyBuffer) {
+		return NewBlackHoleConn()
+	} else {
+		internal.AddSalt(clientEphemeralPublicKeyBuffer)
+	}
 
 	a.clientEphemeralPublicKey = bytesToPublicKey(clientEphemeralPublicKeyBuffer)
 
