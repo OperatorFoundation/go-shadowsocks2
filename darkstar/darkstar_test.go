@@ -8,8 +8,62 @@ import (
 	"github.com/aead/ecdh"
 	"github.com/stretchr/testify/assert"
 	"net"
+	"strconv"
 	"testing"
 )
+
+func TestForShadowSocksTestingMatrix(t *testing.T) {
+	serverPublicKey := "d089c225ef8cda8d477a586f062b31a756270124d94944e458edf1a9e1e41ed6"
+	serverIPString := "164.92.71.230"
+	serverPort := 2222
+	serverPortString := strconv.Itoa(serverPort)
+	serverAddressString := serverIPString + ":" + serverPortString
+
+	println("Creating a DarkStar client..")
+
+	darkStarClient := NewDarkStarClient(serverPublicKey, serverIPString, serverPort)
+
+	println("DarkStar client created.")
+
+	netConnection, dialError := net.Dial("tcp", serverAddressString)
+	if dialError != nil {
+		t.Fail()
+		return
+	}
+
+	println("Network connection created.")
+
+	darkStarConn := darkStarClient.StreamConn(netConnection)
+
+	println("DarkStar connection created.")
+
+	httpRequestString := "GET / HTTP/1.0\r\nConnection: close\r\n\r\n"
+
+	_, writeError := darkStarConn.Write([]byte(httpRequestString))
+	if writeError != nil {
+		assert.Nil(t, writeError, "write error: %s", writeError)
+		return
+	}
+
+	println("Wrote some bytes.")
+
+	testBytes := make([]byte, 10)
+	bytesRead, readError := darkStarConn.Read(testBytes)
+	if readError != nil {
+		assert.Nil(t, readError, "read error: %s", readError)
+		return
+	}
+
+	println("Read some bytes.")
+
+	//assert.Equal(t, 4, bytesRead, "read wrong size of bytes")
+
+	testString := string(testBytes)
+	println("Server sent a response: " + testString)
+	println("Server response is " + strconv.Itoa(bytesRead) + " bytes")
+
+	//assert.Equal(t, "test", testString, "test string didnt match")
+}
 
 func TestKeyGen(t *testing.T) {
 	keyExchange := ecdh.Generic(elliptic.P256())
@@ -94,15 +148,15 @@ func TestDarkStarClient(t *testing.T) {
 
 	addr := "127.0.0.1:1234"
 
-	client := NewDarkStarClient(publicKeyHex, "127.0.0.1", 1234)
+	darkStarClient := NewDarkStarClient(publicKeyHex, "127.0.0.1", 1234)
 
-	netConn, dialError := net.Dial("tcp", addr)
+	netConnection, dialError := net.Dial("tcp", addr)
 	if dialError != nil {
 		t.Fail()
 		return
 	}
 
-	darkStarConn := client.StreamConn(netConn)
+	darkStarConn := darkStarClient.StreamConn(netConnection)
 	testBytes := make([]byte, 4)
 	bytesRead, readError := darkStarConn.Read(testBytes)
 	if readError != nil {
