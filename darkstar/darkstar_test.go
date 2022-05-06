@@ -9,20 +9,18 @@ import (
 	"github.com/stretchr/testify/assert"
 	"net"
 	"strconv"
+	"strings"
 	"testing"
 )
 
 func TestForShadowSocksTestingMatrix(t *testing.T) {
-	serverPublicKey := "d089c225ef8cda8d477a586f062b31a756270124d94944e458edf1a9e1e41ed6"
-	serverIPString := "164.92.71.230"
+	// TODO: Use the correct server public key, IP, and port
+	serverPublicKey := ""
+	serverIPString := ""
 	serverPort := 2222
 	serverPortString := strconv.Itoa(serverPort)
 	serverAddressString := serverIPString + ":" + serverPortString
-
-	println("Creating a DarkStar client..")
-
 	darkStarClient := NewDarkStarClient(serverPublicKey, serverIPString, serverPort)
-
 	println("DarkStar client created.")
 
 	netConnection, dialError := net.Dial("tcp", serverAddressString)
@@ -30,38 +28,32 @@ func TestForShadowSocksTestingMatrix(t *testing.T) {
 		t.Fail()
 		return
 	}
-
 	println("Network connection created.")
 
 	darkStarConn := darkStarClient.StreamConn(netConnection)
-
 	println("DarkStar connection created.")
 
 	httpRequestString := "GET / HTTP/1.0\r\nConnection: close\r\n\r\n"
-
 	_, writeError := darkStarConn.Write([]byte(httpRequestString))
 	if writeError != nil {
 		assert.Nil(t, writeError, "write error: %s", writeError)
 		return
 	}
-
 	println("Wrote some bytes.")
 
-	testBytes := make([]byte, 10)
+	testBytes := make([]byte, 250)
 	bytesRead, readError := darkStarConn.Read(testBytes)
 	if readError != nil {
 		assert.Nil(t, readError, "read error: %s", readError)
 		return
 	}
-
 	println("Read some bytes.")
-
-	//assert.Equal(t, 4, bytesRead, "read wrong size of bytes")
 
 	testString := string(testBytes)
 	println("Server sent a response: " + testString)
 	println("Server response is " + strconv.Itoa(bytesRead) + " bytes")
 
+	assert.True(t, strings.Contains(testString, "Yeah!"), "The server response was not what we were expecting!")
 	//assert.Equal(t, "test", testString, "test string didnt match")
 }
 
