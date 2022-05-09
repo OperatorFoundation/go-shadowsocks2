@@ -84,4 +84,3 @@ func (c *packetConn) ReadFrom(b []byte) (int, net.Addr, error) {
 	copy(b, bb)
 	return len(bb), addr, err
 }
-

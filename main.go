@@ -175,7 +175,6 @@ func main() {
 			keyHex := hex.EncodeToString(key)
 			ciph = darkstar.NewDarkStarClient(keyHex, host, port)
 		} else {
-
 			ciph, cipherError = core.PickCipher(cipher, key, password)
 			if cipherError != nil {
 				log.Fatal(cipherError)
