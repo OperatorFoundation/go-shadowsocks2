@@ -10,9 +10,11 @@ import (
 	"crypto/sha256"
 	"encoding/binary"
 	"encoding/hex"
+	"errors"
+	"net"
+
 	"github.com/OperatorFoundation/go-shadowsocks2/internal"
 	"github.com/aead/ecdh"
-	"net"
 )
 
 type DarkStarServer struct {
@@ -226,6 +228,14 @@ func (a *DarkStarServer) generateServerConfirmationCode() ([]byte, error) {
 
 func (a *DarkStarServer) generateClientConfirmationCode() ([]byte, error) {
 	p256 := ecdh.Generic(elliptic.P256())
+	if a.serverPersistentPrivateKey == nil {
+		return nil, errors.New("(generateClientConfirmationCode) serverPersistentPrivateKey is nil")
+	}
+
+	if a.clientEphemeralPublicKey == nil {
+		return nil, errors.New("(generateClientConfirmationCode) clientEphemeralPublicKey is nil")
+	}
+
 	ecdhSecret := p256.ComputeSecret(a.serverPersistentPrivateKey, a.clientEphemeralPublicKey)
 	serverPersistentPublicKeyData, serverKeyError := PublicKeyToBytes(a.serverPersistentPublicKey)
 	if serverKeyError != nil {
