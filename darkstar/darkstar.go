@@ -4,10 +4,11 @@ import (
 	"crypto"
 	"crypto/elliptic"
 	"errors"
+
 	"github.com/aead/ecdh"
 )
 
-func bytesToPublicKey(bytes []byte) crypto.PublicKey{
+func bytesToPublicKey(bytes []byte) crypto.PublicKey {
 	publicKeyBuffer := make([]byte, 33)
 	copy(publicKeyBuffer[1:], bytes)
 	publicKeyBuffer[0] = 3
@@ -21,5 +22,8 @@ func PublicKeyToBytes(pubKey crypto.PublicKey) ([]byte, error) {
 		return nil, errors.New("could not convert client public key to point")
 	}
 	bytes := elliptic.MarshalCompressed(elliptic.P256(), point.X, point.Y)
+	if bytes == nil {
+		return nil, errors.New("MarshalCompressed returned nil")
+	}
 	return bytes[1:], nil
 }
