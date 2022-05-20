@@ -3,9 +3,10 @@ package core
 import (
 	"crypto/md5"
 	"errors"
-	"github.com/OperatorFoundation/go-shadowsocks2/shadowaead"
 	"net"
 	"sort"
+
+	"github.com/OperatorFoundation/go-shadowsocks2/shadowaead"
 )
 
 type Cipher interface {
@@ -14,7 +15,7 @@ type Cipher interface {
 }
 
 type StreamConnCipher interface {
-	StreamConn(net.Conn) net.Conn
+	StreamConn(net.Conn) (net.Conn, error)
 }
 
 type PacketConnCipher interface {
@@ -76,7 +77,9 @@ func PickCipher(name string, key []byte, password string) (Cipher, error) {
 
 type aeadCipher struct{ shadowaead.Cipher }
 
-func (aead *aeadCipher) StreamConn(c net.Conn) net.Conn { return shadowaead.NewConn(c, aead) }
+func (aead *aeadCipher) StreamConn(c net.Conn) (net.Conn, error) {
+	return shadowaead.NewConn(c, aead), nil
+}
 func (aead *aeadCipher) PacketConn(c net.PacketConn) net.PacketConn {
 	return shadowaead.NewPacketConn(c, aead)
 }
@@ -84,7 +87,7 @@ func (aead *aeadCipher) PacketConn(c net.PacketConn) net.PacketConn {
 // dummy cipher does not encrypt
 type dummy struct{}
 
-func (dummy) StreamConn(c net.Conn) net.Conn             { return c }
+func (dummy) StreamConn(c net.Conn) (net.Conn, error)    { return c, nil }
 func (dummy) PacketConn(c net.PacketConn) net.PacketConn { return c }
 
 // key-derivation function from original Shadowsocks

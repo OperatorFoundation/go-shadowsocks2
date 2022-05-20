@@ -49,17 +49,17 @@ func NewDarkStarServer(serverPersistentPrivateKey string, host string, port int)
 	}
 }
 
-func (a *DarkStarServer) StreamConn(conn net.Conn) net.Conn {
+func (a *DarkStarServer) StreamConn(conn net.Conn) (net.Conn, error) {
 	clientEphemeralPublicKeyBuffer := make([]byte, keySize)
 	_, keyReadError := conn.Read(clientEphemeralPublicKeyBuffer)
 	if keyReadError != nil {
 		print("DarkStarServer: Error creating a DarkStar connection: ")
 		println(keyReadError)
-		return nil
+		return nil, keyReadError
 	}
 
 	if internal.CheckSalt(clientEphemeralPublicKeyBuffer) {
-		return NewBlackHoleConn()
+		return NewBlackHoleConn(), nil
 	} else {
 		internal.AddSalt(clientEphemeralPublicKeyBuffer)
 	}
@@ -71,24 +71,24 @@ func (a *DarkStarServer) StreamConn(conn net.Conn) net.Conn {
 	if confirmationReadError != nil {
 		print("DarkStarServer: Error creating a DarkStar connection: ")
 		println(confirmationReadError)
-		return nil
+		return nil, confirmationReadError
 	}
 
 	serverCopyClientConfirmationCode, confirmationError := a.generateClientConfirmationCode()
 	if confirmationError != nil {
 		print("DarkStarServer: Error creating a DarkStar connection: ")
 		println(confirmationError)
-		return nil
+		return nil, confirmationError
 	}
 	if !bytes.Equal(clientConfirmationCode, serverCopyClientConfirmationCode) {
-		return nil
+		return nil, errors.New("clientConfirmationCode and server copy not equal")
 	}
 
 	serverEphemeralPublicKeyData, pubKeyToBytesError := PublicKeyToBytes(a.serverEphemeralPublicKey)
 	if pubKeyToBytesError != nil {
 		print("DarkStarServer: Error creating a DarkStar connection: ")
 		println(pubKeyToBytesError)
-		return nil
+		return nil, pubKeyToBytesError
 	}
 
 	serverConfirmationCode, _ := a.generateServerConfirmationCode()
@@ -97,45 +97,45 @@ func (a *DarkStarServer) StreamConn(conn net.Conn) net.Conn {
 	if keyWriteError != nil {
 		print("DarkStarServer: Error creating a DarkStar connection: ")
 		println(keyWriteError)
-		return nil
+		return nil, keyWriteError
 	}
 
 	_, confirmationWriteError := conn.Write(serverConfirmationCode)
 	if confirmationWriteError != nil {
 		print("DarkStarServer: Error creating a DarkStar connection: ")
 		println(confirmationWriteError)
-		return nil
+		return nil, confirmationWriteError
 	}
 
 	sharedKeyServerToClient, sharedKeyServerError := a.createServerToClientSharedKey()
 	if sharedKeyServerError != nil {
 		print("DarkStarServer: Error creating a DarkStar connection: ")
 		println(sharedKeyServerError)
-		return nil
+		return nil, sharedKeyServerError
 	}
 
 	sharedKeyClientToServer, sharedKeyClientError := a.createClientToServerSharedKey()
 	if sharedKeyClientError != nil {
 		print("DarkStarServer: Error creating a DarkStar connection: ")
 		println(sharedKeyClientError)
-		return nil
+		return nil, sharedKeyClientError
 	}
 
 	encryptCipher, encryptKeyError := a.Encrypter(sharedKeyServerToClient)
 	if encryptKeyError != nil {
 		print("DarkStarServer: Error creating a DarkStar connection: ")
 		println(encryptKeyError)
-		return nil
+		return nil, encryptKeyError
 	}
 
 	decryptCipher, decryptKeyError := a.Decrypter(sharedKeyClientToServer)
 	if decryptKeyError != nil {
 		print("DarkStarServer: Error creating a DarkStar connection: ")
 		println(decryptKeyError)
-		return nil
+		return nil, decryptKeyError
 	}
 
-	return NewDarkStarConn(conn, encryptCipher, decryptCipher)
+	return NewDarkStarConn(conn, encryptCipher, decryptCipher), nil
 }
 
 func (a *DarkStarServer) PacketConn(conn net.PacketConn) net.PacketConn {

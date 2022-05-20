@@ -5,12 +5,13 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
-	"github.com/aead/ecdh"
-	"github.com/stretchr/testify/assert"
 	"net"
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/aead/ecdh"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestForShadowSocksTestingMatrix(t *testing.T) {
@@ -101,7 +102,10 @@ func TestDarkStar(t *testing.T) {
 				t.Fail()
 			}
 
-			darkStarConn := server.StreamConn(c)
+			darkStarConn, connError := server.StreamConn(c)
+			if connError != nil {
+				t.Fail()
+			}
 			_, writeError := darkStarConn.Write([]byte("test"))
 			if writeError != nil {
 				return
@@ -181,7 +185,10 @@ func TestDarkStarServer(t *testing.T) {
 				t.Fail()
 			}
 
-			darkStarConn := server.StreamConn(c)
+			darkStarConn, connError := server.StreamConn(c)
+			if connError != nil {
+				t.Fail()
+			}
 			_, writeError := darkStarConn.Write([]byte("test"))
 			if writeError != nil {
 				return
@@ -207,6 +214,7 @@ func TestDarkStarClientAndServer(t *testing.T) {
 
 	l, err := net.Listen("tcp", addr)
 	if err != nil {
+		fmt.Println(err)
 		t.Fail()
 		return
 	}
@@ -219,7 +227,10 @@ func TestDarkStarClientAndServer(t *testing.T) {
 				return
 			}
 
-			darkStarConn := server.StreamConn(c)
+			darkStarConn, connError := server.StreamConn(c)
+			if connError != nil {
+				t.Fail()
+			}
 			_, writeError := darkStarConn.Write([]byte("test"))
 			if writeError != nil {
 				return
