@@ -14,13 +14,13 @@ import (
 )
 
 // Create a SOCKS server listening on addr and proxy to server.
-func socksLocal(addr, server string, shadow func(net.Conn) net.Conn) {
+func socksLocal(addr, server string, shadow func(net.Conn) (net.Conn, error)) {
 	logf("SOCKS proxy %s <-> %s", addr, server)
 	tcpLocal(addr, server, shadow, func(c net.Conn) (socks.Addr, error) { return socks.Handshake(c) })
 }
 
 // Create a TCP tunnel from addr to target via server.
-func tcpTun(addr, server, target string, shadow func(net.Conn) net.Conn) {
+func tcpTun(addr, server, target string, shadow func(net.Conn) (net.Conn, error)) {
 	tgt := socks.ParseAddr(target)
 	if tgt == nil {
 		logf("invalid target address %q", target)
@@ -31,7 +31,7 @@ func tcpTun(addr, server, target string, shadow func(net.Conn) net.Conn) {
 }
 
 // Listen on addr and proxy to server to reach target from getAddr.
-func tcpLocal(addr, server string, shadow func(net.Conn) net.Conn, getAddr func(net.Conn) (socks.Addr, error)) {
+func tcpLocal(addr, server string, shadow func(net.Conn) (net.Conn, error), getAddr func(net.Conn) (socks.Addr, error)) {
 	l, err := net.Listen("tcp", addr)
 	if err != nil {
 		logf("failed to listen on %s: %v", addr, err)
@@ -77,7 +77,7 @@ func tcpLocal(addr, server string, shadow func(net.Conn) net.Conn, getAddr func(
 			if config.TCPCork {
 				rc = timedCork(rc, 10*time.Millisecond, 1280)
 			}
-			rc = shadow(rc)
+			rc, err = shadow(rc)
 
 			if _, err = rc.Write(tgt); err != nil {
 				logf("failed to send target address: %v", err)
@@ -93,7 +93,7 @@ func tcpLocal(addr, server string, shadow func(net.Conn) net.Conn, getAddr func(
 }
 
 // Listen on addr for incoming connections.
-func tcpRemote(addr string, shadow func(net.Conn) net.Conn) {
+func tcpRemote(addr string, shadow func(net.Conn) (net.Conn, error)) {
 	l, err := net.Listen("tcp", addr)
 	if err != nil {
 		logf("failed to listen on %s: %v", addr, err)
@@ -113,7 +113,10 @@ func tcpRemote(addr string, shadow func(net.Conn) net.Conn) {
 			if config.TCPCork {
 				c = timedCork(c, 10*time.Millisecond, 1280)
 			}
-			sc := shadow(c)
+			sc, err := shadow(c)
+			if err != nil {
+				return
+			}
 
 			tgt, err := socks.ReadAddr(sc)
 			if err != nil {

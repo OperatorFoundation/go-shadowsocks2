@@ -31,7 +31,11 @@ func TestForShadowSocksTestingMatrix(t *testing.T) {
 	}
 	println("Network connection created.")
 
-	darkStarConn := darkStarClient.StreamConn(netConnection)
+	darkStarConn, conError := darkStarClient.StreamConn(netConnection)
+	if conError != nil {
+		t.Fail()
+		return
+	}
 	println("DarkStar connection created.")
 
 	httpRequestString := "GET / HTTP/1.0\r\nConnection: close\r\n\r\n"
@@ -125,7 +129,11 @@ func TestDarkStar(t *testing.T) {
 		t.Fail()
 	}
 
-	darkStarConn := client.StreamConn(netConn)
+	darkStarConn, connError := client.StreamConn(netConn)
+	if connError != nil {
+		t.Fail()
+		return
+	}
 	testBytes := make([]byte, 4)
 	_, readError := darkStarConn.Read(testBytes)
 	if readError != nil {
@@ -152,7 +160,11 @@ func TestDarkStarClient(t *testing.T) {
 		return
 	}
 
-	darkStarConn := darkStarClient.StreamConn(netConnection)
+	darkStarConn, connError := darkStarClient.StreamConn(netConnection)
+	if connError != nil {
+		t.Fail()
+		return
+	}
 	testBytes := make([]byte, 4)
 	bytesRead, readError := darkStarConn.Read(testBytes)
 	if readError != nil {
@@ -263,7 +275,11 @@ func TestDarkStarClientAndServer(t *testing.T) {
 		return
 	}
 
-	darkStarConn := client.StreamConn(netConn)
+	darkStarConn, connError := client.StreamConn(netConn)
+	if connError != nil {
+		t.Fail()
+		return
+	}
 	testBytes := make([]byte, 4)
 	bytesRead, readError := darkStarConn.Read(testBytes)
 	if readError != nil {

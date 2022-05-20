@@ -10,8 +10,10 @@ import (
 	"crypto/sha256"
 	"encoding/binary"
 	"encoding/hex"
-	"github.com/aead/ecdh"
+	"errors"
 	"net"
+
+	"github.com/aead/ecdh"
 )
 
 const keySize = 32
@@ -44,29 +46,29 @@ func NewDarkStarClient(serverPersistentPublicKey string, host string, port int) 
 	return &DarkStarClient{serverPersistentPublicKey: serverPersistentPublicKeyPoint, serverIdentifier: serverIdentifier, clientEphemeralPrivateKey: clientEphemeralPrivateKey, clientEphemeralPublicKey: clientEphemeralPublicKey}
 }
 
-func (a *DarkStarClient) StreamConn(conn net.Conn) net.Conn {
+func (a *DarkStarClient) StreamConn(conn net.Conn) (net.Conn, error) {
 	clientEphemeralPublicKeyBytes, keyError := PublicKeyToBytes(a.clientEphemeralPublicKey)
 	if keyError != nil {
-		return nil
+		return nil, keyError
 	}
 	clientConfirmationCode, confirmationError := a.generateClientConfirmationCode()
 	if confirmationError != nil {
-		return nil
+		return nil, confirmationError
 	}
 
 	_, keyWriteError := conn.Write(clientEphemeralPublicKeyBytes)
 	if keyWriteError != nil {
-		return nil
+		return nil, keyWriteError
 	}
 	_, confirmationWriteError := conn.Write(clientConfirmationCode)
 	if confirmationWriteError != nil {
-		return nil
+		return nil, confirmationWriteError
 	}
 
 	serverEphemeralPublicKeyBuffer := make([]byte, keySize)
 	_, keyReadError := conn.Read(serverEphemeralPublicKeyBuffer)
 	if keyReadError != nil {
-		return nil
+		return nil, keyReadError
 	}
 
 	a.serverEphemeralPublicKey = bytesToPublicKey(serverEphemeralPublicKeyBuffer)
@@ -74,38 +76,38 @@ func (a *DarkStarClient) StreamConn(conn net.Conn) net.Conn {
 	serverConfirmationCode := make([]byte, confirmationCodeSize)
 	_, confirmationReadError := conn.Read(serverConfirmationCode)
 	if confirmationReadError != nil {
-		return nil
+		return nil, confirmationReadError
 	}
 
 	clientCopyServerConfirmationCode, confirmationCodeError := a.generateServerConfirmationCode()
 	if confirmationCodeError != nil {
-		return nil
+		return nil, confirmationCodeError
 	}
 	if !bytes.Equal(serverConfirmationCode, clientCopyServerConfirmationCode) {
-		return nil
+		return nil, errors.New("serverConfirmationCode and client copy are not equal")
 	}
 
 	sharedKeyClientToServer, sharedKeyClientError := a.createClientToServerSharedKey()
 	if sharedKeyClientError != nil {
-		return nil
+		return nil, sharedKeyClientError
 	}
 
 	sharedKeyServerToClient, sharedKeyServerError := a.createServerToClientSharedKey()
 	if sharedKeyServerError != nil {
-		return nil
+		return nil, sharedKeyServerError
 	}
 
 	encryptCipher, encryptKeyError := a.Encrypter(sharedKeyClientToServer)
 	if encryptKeyError != nil {
-		return nil
+		return nil, encryptKeyError
 	}
 
 	decryptCipher, decryptKeyError := a.Encrypter(sharedKeyServerToClient)
 	if decryptKeyError != nil {
-		return nil
+		return nil, decryptKeyError
 	}
 
-	return NewDarkStarConn(conn, encryptCipher, decryptCipher)
+	return NewDarkStarConn(conn, encryptCipher, decryptCipher), nil
 }
 
 func (a *DarkStarClient) PacketConn(conn net.PacketConn) net.PacketConn {

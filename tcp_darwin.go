@@ -7,11 +7,11 @@ import (
 	"github.com/OperatorFoundation/go-shadowsocks2/socks"
 )
 
-func redirLocal(addr, server string, shadow func(net.Conn) net.Conn) {
+func redirLocal(addr, server string, shadow func(net.Conn) (net.Conn, error)) {
 	tcpLocal(addr, server, shadow, natLookup)
 }
 
-func redir6Local(addr, server string, shadow func(net.Conn) net.Conn) {
+func redir6Local(addr, server string, shadow func(net.Conn) (net.Conn, error)) {
 	panic("TCP6 redirect not supported")
 }
 

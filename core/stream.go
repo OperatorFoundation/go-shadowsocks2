@@ -14,10 +14,16 @@ func Listen(network, address string, ciph StreamConnCipher) (net.Listener, error
 
 func (l *listener) Accept() (net.Conn, error) {
 	c, err := l.Listener.Accept()
-	return l.StreamConn(c), err
+	if err != nil {
+		return nil, err
+	}
+	return l.StreamConn(c)
 }
 
 func Dial(network, address string, ciph StreamConnCipher) (net.Conn, error) {
 	c, err := net.Dial(network, address)
-	return ciph.StreamConn(c), err
+	if err != nil {
+		return nil, err
+	}
+	return ciph.StreamConn(c)
 }
