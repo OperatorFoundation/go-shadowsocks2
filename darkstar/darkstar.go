@@ -8,7 +8,7 @@ import (
 	"github.com/aead/ecdh"
 )
 
-func bytesToPublicKey(bytes []byte) crypto.PublicKey {
+func BytesToPublicKey(bytes []byte) crypto.PublicKey {
 	publicKeyBuffer := make([]byte, 33)
 	copy(publicKeyBuffer[1:], bytes)
 	publicKeyBuffer[0] = 3

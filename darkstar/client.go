@@ -33,7 +33,7 @@ func NewDarkStarClient(serverPersistentPublicKey string, host string, port int) 
 		return nil
 	}
 
-	serverPersistentPublicKeyPoint := bytesToPublicKey(publicKeyBytes)
+	serverPersistentPublicKeyPoint := BytesToPublicKey(publicKeyBytes)
 
 	serverIdentifier := getServerIdentifier(host, port)
 
@@ -71,7 +71,7 @@ func (a *DarkStarClient) StreamConn(conn net.Conn) (net.Conn, error) {
 		return nil, keyReadError
 	}
 
-	a.serverEphemeralPublicKey = bytesToPublicKey(serverEphemeralPublicKeyBuffer)
+	a.serverEphemeralPublicKey = BytesToPublicKey(serverEphemeralPublicKeyBuffer)
 
 	serverConfirmationCode := make([]byte, confirmationCodeSize)
 	_, confirmationReadError := conn.Read(serverConfirmationCode)

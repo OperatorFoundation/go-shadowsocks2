@@ -64,7 +64,7 @@ func (a *DarkStarServer) StreamConn(conn net.Conn) (net.Conn, error) {
 		internal.AddSalt(clientEphemeralPublicKeyBuffer)
 	}
 
-	a.clientEphemeralPublicKey = bytesToPublicKey(clientEphemeralPublicKeyBuffer)
+	a.clientEphemeralPublicKey = BytesToPublicKey(clientEphemeralPublicKeyBuffer)
 
 	clientConfirmationCode := make([]byte, confirmationCodeSize)
 	_, confirmationReadError := conn.Read(clientConfirmationCode)

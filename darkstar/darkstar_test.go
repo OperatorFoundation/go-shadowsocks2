@@ -304,7 +304,7 @@ func TestKeys(t *testing.T) {
 	publicKeyHex := "d089c225ef8cda8d477a586f062b31a756270124d94944e458edf1a9e1e41ed6"
 
 	publicKeyDecode, _ := hex.DecodeString(publicKeyHex)
-	publicKey := bytesToPublicKey(publicKeyDecode)
+	publicKey := BytesToPublicKey(publicKeyDecode)
 	privateKey, _ := hex.DecodeString(privateKeyHex)
 	keyExchange := ecdh.Generic(elliptic.P256())
 	publicKey2 := keyExchange.PublicKey(privateKey)
