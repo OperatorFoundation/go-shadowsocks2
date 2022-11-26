@@ -8,9 +8,10 @@ import (
 	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/sha256"
+	"encoding/base64"
 	"encoding/binary"
-	"encoding/hex"
 	"errors"
+	"fmt"
 	"net"
 
 	"github.com/aead/ecdh"
@@ -28,7 +29,7 @@ type DarkStarClient struct {
 }
 
 func NewDarkStarClient(serverPersistentPublicKey string, host string, port int) *DarkStarClient {
-	publicKeyBytes, decodeError := hex.DecodeString(serverPersistentPublicKey)
+	publicKeyBytes, decodeError:= base64.StdEncoding.DecodeString(serverPersistentPublicKey)
 	if decodeError != nil {
 		return nil
 	}
@@ -196,6 +197,10 @@ func (a *DarkStarClient) createServerToClientSharedKey() ([]byte, error) {
 
 func getServerIdentifier(host string, port int) []byte {
 	hostIP := net.ParseIP(host)
+	if hostIP == nil || len(hostIP) != 16 {
+		fmt.Println("server identifier host failed to parse")
+		return nil
+	}
 	// we do the below part because host IP in bytes is 16 bytes with padding at the beginning
 	hostBytes := []byte(hostIP)[12:16]
 	portUint := uint16(port)

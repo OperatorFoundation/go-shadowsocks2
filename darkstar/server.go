@@ -8,8 +8,8 @@ import (
 	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/sha256"
+	"encoding/base64"
 	"encoding/binary"
-	"encoding/hex"
 	"errors"
 	"net"
 
@@ -27,7 +27,7 @@ type DarkStarServer struct {
 }
 
 func NewDarkStarServer(serverPersistentPrivateKey string, host string, port int) *DarkStarServer {
-	privateKey, decodeError := hex.DecodeString(serverPersistentPrivateKey)
+	privateKey, decodeError := base64.StdEncoding.DecodeString(serverPersistentPrivateKey)
 	if decodeError != nil {
 		return nil
 	}

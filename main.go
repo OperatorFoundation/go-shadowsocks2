@@ -4,7 +4,6 @@ import (
 	"crypto/elliptic"
 	"crypto/rand"
 	"encoding/base64"
-	"encoding/hex"
 	"flag"
 	"fmt"
 	"github.com/OperatorFoundation/go-shadowsocks2/darkstar"
@@ -87,13 +86,12 @@ func main() {
 			}
 			serverPersistentPrivateKeyBytes := serverPersistentPrivateKey.([]byte)
 
-			serverPersistentPublicKeyHex := hex.EncodeToString(serverPersistentPublicKeyBytes)
 
 			writeError := os.WriteFile("DarkStarServer.priv", serverPersistentPrivateKeyBytes, 0600)
 			if writeError != nil {
 				return
 			}
-			writeError = os.WriteFile("DarkStarServer.pub", []byte(serverPersistentPublicKeyHex), 0644)
+			writeError = os.WriteFile("DarkStarServer.pub", []byte(serverPersistentPublicKeyBytes), 0644)
 			if writeError != nil {
 				return
 			}
@@ -134,12 +132,7 @@ func main() {
 				return
 			}
 
-			decodedKey, decodeError := hex.DecodeString(string(publicKeyBytes))
-			if decodeError != nil {
-				return
-			}
-
-			key = decodedKey
+			key = publicKeyBytes
 		} else {
 			privateKeyBytes, privateKeyReadError := os.ReadFile(flags.KeyFile)
 			if privateKeyReadError != nil {
@@ -172,8 +165,12 @@ func main() {
 			host := parts[0]
 			var port int
 			port, cipherError = strconv.Atoi(parts[1])
-			keyHex := hex.EncodeToString(key)
-			ciph = darkstar.NewDarkStarClient(keyHex, host, port)
+			if cipherError != nil {
+				log.Fatal(cipherError)
+			}
+			
+			keyString := base64.StdEncoding.EncodeToString(key)
+			ciph = darkstar.NewDarkStarClient(keyString, host, port)
 		} else {
 			ciph, cipherError = core.PickCipher(cipher, key, password)
 			if cipherError != nil {
@@ -247,9 +244,8 @@ func main() {
 			host := parts[0]
 			var port int
 			port, err = strconv.Atoi(parts[1])
-			keyHex := hex.EncodeToString(key)
-			ciph = darkstar.NewDarkStarServer(keyHex, host, port)
-			err = nil
+			keyString := base64.StdEncoding.EncodeToString(key)
+			ciph = darkstar.NewDarkStarServer(keyString, host, port)
 		} else {
 			ciph, err = core.PickCipher(cipher, key, password)
 		}

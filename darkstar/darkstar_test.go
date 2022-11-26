@@ -3,7 +3,7 @@ package darkstar
 import (
 	"crypto/elliptic"
 	"crypto/rand"
-	"encoding/hex"
+	"encoding/base64"
 	"fmt"
 	"net"
 	"strconv"
@@ -79,20 +79,20 @@ func TestKeyGen(t *testing.T) {
 		t.Fail()
 	}
 
-	privateKeyHex := hex.EncodeToString(privateKeyBytes)
-	fmt.Printf("private key bytes: %s\n", privateKeyHex)
+	privateKeyString := base64.StdEncoding.EncodeToString(privateKeyBytes)
+	fmt.Printf("private key bytes: %s\n", privateKeyString)
 
-	publicKeyHex := hex.EncodeToString(publicKeyBytes)
-	fmt.Printf("public key bytes: %s\n", publicKeyHex)
+	publicKeyString := base64.StdEncoding.EncodeToString(publicKeyBytes)
+	fmt.Printf("public key bytes: %s\n", publicKeyString)
 }
 
 func TestDarkStar(t *testing.T) {
-	publicKeyHex := "d089c225ef8cda8d477a586f062b31a756270124d94944e458edf1a9e1e41ed6"
-	privateKeyHex := "dd5e9e88d13e66017eb2087b128c1009539d446208f86173e30409a898ada148"
+	publicKeyString := "6LukZ8KqZLQ7eOdaTVFkBVqMA8NS1AUxwqG17L/kHnQ="
+	privateKeyString := "RaHouPFVOazVSqInoMm8BSO9o/7J493y4cUVofmwXAU="
 
 	addr := "127.0.0.1:1234"
 
-	server := NewDarkStarServer(privateKeyHex, "127.0.0.1", 1234)
+	server := NewDarkStarServer(privateKeyString, "127.0.0.1", 1234)
 
 	l, err := net.Listen("tcp", addr)
 	if err != nil {
@@ -122,7 +122,7 @@ func TestDarkStar(t *testing.T) {
 		}
 	}()
 
-	client := NewDarkStarClient(publicKeyHex, "127.0.0.1", 1234)
+	client := NewDarkStarClient(publicKeyString, "127.0.0.1", 1234)
 
 	netConn, dialError := net.Dial("tcp", addr)
 	if dialError != nil {
@@ -148,11 +148,11 @@ func TestDarkStar(t *testing.T) {
 
 //old code
 func TestDarkStarClient(t *testing.T) {
-	publicKeyHex := "d089c225ef8cda8d477a586f062b31a756270124d94944e458edf1a9e1e41ed6"
+	publicKeyString := "6LukZ8KqZLQ7eOdaTVFkBVqMA8NS1AUxwqG17L/kHnQ="
 
 	addr := "127.0.0.1:1234"
 
-	darkStarClient := NewDarkStarClient(publicKeyHex, "127.0.0.1", 1234)
+	darkStarClient := NewDarkStarClient(publicKeyString, "127.0.0.1", 1234)
 
 	netConnection, dialError := net.Dial("tcp", addr)
 	if dialError != nil {
@@ -180,9 +180,9 @@ func TestDarkStarClient(t *testing.T) {
 }
 
 func TestDarkStarServer(t *testing.T) {
-	privateKeyHex := "dd5e9e88d13e66017eb2087b128c1009539d446208f86173e30409a898ada148"
+	privateKeyString := "RaHouPFVOazVSqInoMm8BSO9o/7J493y4cUVofmwXAU="
 	addr := "127.0.0.1:1234"
-	server := NewDarkStarServer(privateKeyHex, "127.0.0.1", 1234)
+	server := NewDarkStarServer(privateKeyString, "127.0.0.1", 1234)
 	doneChannel := make(chan bool)
 
 	l, err := net.Listen("tcp", addr)
@@ -220,9 +220,9 @@ func TestDarkStarServer(t *testing.T) {
 //new code
 func TestDarkStarClientAndServer(t *testing.T) {
 	//server
-	privateKeyHex := "dd5e9e88d13e66017eb2087b128c1009539d446208f86173e30409a898ada148"
+	privateKeyString := "RaHouPFVOazVSqInoMm8BSO9o/7J493y4cUVofmwXAU="
 	addr := "127.0.0.1:1234"
-	server := NewDarkStarServer(privateKeyHex, "127.0.0.1", 1234)
+	server := NewDarkStarServer(privateKeyString, "127.0.0.1", 1234)
 
 	l, err := net.Listen("tcp", addr)
 	if err != nil {
@@ -265,9 +265,9 @@ func TestDarkStarClientAndServer(t *testing.T) {
 	}()
 
 	//client
-	publicKeyHex := "d089c225ef8cda8d477a586f062b31a756270124d94944e458edf1a9e1e41ed6"
+	publicKeyString := "6LukZ8KqZLQ7eOdaTVFkBVqMA8NS1AUxwqG17L/kHnQ="
 
-	client := NewDarkStarClient(publicKeyHex, "127.0.0.1", 1234)
+	client := NewDarkStarClient(publicKeyString, "127.0.0.1", 1234)
 
 	netConn, dialError := net.Dial("tcp", addr)
 	if dialError != nil {
@@ -300,19 +300,19 @@ func TestDarkStarClientAndServer(t *testing.T) {
 }
 
 func TestKeys(t *testing.T) {
-	privateKeyHex := "dd5e9e88d13e66017eb2087b128c1009539d446208f86173e30409a898ada148"
-	publicKeyHex := "d089c225ef8cda8d477a586f062b31a756270124d94944e458edf1a9e1e41ed6"
+	privateKeyString := "RaHouPFVOazVSqInoMm8BSO9o/7J493y4cUVofmwXAU="
+	publicKeyString := "6LukZ8KqZLQ7eOdaTVFkBVqMA8NS1AUxwqG17L/kHnQ="
 
-	publicKeyDecode, _ := hex.DecodeString(publicKeyHex)
+	publicKeyDecode, _ := base64.StdEncoding.DecodeString(publicKeyString)
 	publicKey := BytesToPublicKey(publicKeyDecode)
-	privateKey, _ := hex.DecodeString(privateKeyHex)
+	privateKey, _ := base64.StdEncoding.DecodeString(privateKeyString)
 	keyExchange := ecdh.Generic(elliptic.P256())
 	publicKey2 := keyExchange.PublicKey(privateKey)
 	publicKey2Bytes, _ := PublicKeyToBytes(publicKey2)
-	publicKey2String := hex.EncodeToString(publicKey2Bytes)
+	publicKey2String := base64.StdEncoding.EncodeToString(publicKey2Bytes)
 	publicKey3, _ := PublicKeyToBytes(publicKey)
-	publicKey3Hex := hex.EncodeToString(publicKey3)
+	publicKey3String := base64.StdEncoding.EncodeToString(publicKey3)
 
-	assert.Equal(t, publicKeyHex, publicKey2String)
-	assert.Equal(t, publicKey3Hex, publicKeyHex)
+	assert.Equal(t, publicKeyString, publicKey2String)
+	assert.Equal(t, publicKey3String, publicKeyString)
 }
