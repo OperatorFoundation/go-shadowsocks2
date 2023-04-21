@@ -220,10 +220,12 @@ func (a *DarkStarServer) generateServerConfirmationCode() ([]byte, error) {
 	return hash.Sum(nil), nil
 }
 
-func (a *DarkStarServer) generateClientConfirmationCode() ([]byte, error) {
+func (a *DarkStarServer) generateClientConfirmationCode() (code []byte, codeError error) {
 	defer func() {
 		if err := recover(); err != nil {
 			fmt.Println("panic occurred in generateClientConfirmationCode:", err)
+			code = nil
+			codeError = errors.New("error occurred in generateClientConfirmationCode")
 		}
 	}()
 
@@ -236,7 +238,6 @@ func (a *DarkStarServer) generateClientConfirmationCode() ([]byte, error) {
 		return nil, errors.New("(generateClientConfirmationCode) clientEphemeralPublicKey is nil")
 	}
 
-	// TODO: Handle possible panic here
 	ecdhSecret := p256.ComputeSecret(a.serverPersistentPrivateKey, a.clientEphemeralPublicKey)
 
 	serverPersistentPublicKeyData, serverKeyError := PublicKeyToBytes(a.serverPersistentPublicKey)

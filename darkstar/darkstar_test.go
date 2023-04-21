@@ -332,7 +332,7 @@ func TestDarkStarServerBadClientConfirmationCode(t *testing.T) {
 		internal.AddSalt(data)
 	}
 
-	//server.clientEphemeralPublicKey = BytesToPublicKey(data)
+	server.clientEphemeralPublicKey = BytesToPublicKey(data)
 
 	_, confirmationError := server.generateClientConfirmationCode()
 	if confirmationError != nil {
