@@ -4,7 +4,9 @@ import (
 	"crypto/elliptic"
 	"crypto/rand"
 	"encoding/base64"
+	"encoding/hex"
 	"fmt"
+	"github.com/OperatorFoundation/go-shadowsocks2/internal"
 	"net"
 	"strconv"
 	"strings"
@@ -146,7 +148,7 @@ func TestDarkStar(t *testing.T) {
 	}
 }
 
-//old code
+// old code
 func TestDarkStarClient(t *testing.T) {
 	publicKeyString := "6LukZ8KqZLQ7eOdaTVFkBVqMA8NS1AUxwqG17L/kHnQ="
 
@@ -217,7 +219,7 @@ func TestDarkStarServer(t *testing.T) {
 	assert.True(t, done)
 }
 
-//new code
+// new code
 func TestDarkStarClientAndServer(t *testing.T) {
 	//server
 	privateKeyString := "RaHouPFVOazVSqInoMm8BSO9o/7J493y4cUVofmwXAU="
@@ -315,4 +317,26 @@ func TestKeys(t *testing.T) {
 
 	assert.Equal(t, publicKeyString, publicKey2String)
 	assert.Equal(t, publicKey3String, publicKeyString)
+}
+
+func TestDarkStarServerBadClientConfirmationCode(t *testing.T) {
+	privateKeyString := "RaHouPFVOazVSqInoMm8BSO9o/7J493y4cUVofmwXAU="
+	server := NewDarkStarServer(privateKeyString, "127.0.0.1", 1234)
+
+	hexString := "d4351dd2911f806d9726d1e40800450000440000400040068bedc0a801dca45c47e6c94c08ae803fbb1a8058ef088018080a044b00000101080ae87bfdcde0060cc145484c4f206c6f63616c686f73740d0a"
+	data, _ := hex.DecodeString(hexString)
+
+	if internal.CheckSalt(data) {
+		fmt.Println("Black hole!!")
+	} else {
+		internal.AddSalt(data)
+	}
+
+	//server.clientEphemeralPublicKey = BytesToPublicKey(data)
+
+	_, confirmationError := server.generateClientConfirmationCode()
+	if confirmationError != nil {
+		fmt.Println("DarkStarServer: Error creating a DarkStar connection: ", confirmationError)
+		t.Fail()
+	}
 }

@@ -221,6 +221,12 @@ func (a *DarkStarServer) generateServerConfirmationCode() ([]byte, error) {
 }
 
 func (a *DarkStarServer) generateClientConfirmationCode() ([]byte, error) {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Println("panic occurred in generateClientConfirmationCode:", err)
+		}
+	}()
+
 	p256 := ecdh.Generic(elliptic.P256())
 	if a.serverPersistentPrivateKey == nil {
 		return nil, errors.New("(generateClientConfirmationCode) serverPersistentPrivateKey is nil")
@@ -230,7 +236,9 @@ func (a *DarkStarServer) generateClientConfirmationCode() ([]byte, error) {
 		return nil, errors.New("(generateClientConfirmationCode) clientEphemeralPublicKey is nil")
 	}
 
+	// TODO: Handle possible panic here
 	ecdhSecret := p256.ComputeSecret(a.serverPersistentPrivateKey, a.clientEphemeralPublicKey)
+
 	serverPersistentPublicKeyData, serverKeyError := PublicKeyToBytes(a.serverPersistentPublicKey)
 	if serverKeyError != nil {
 		return nil, serverKeyError
