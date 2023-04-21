@@ -76,18 +76,18 @@ func (a *DarkStarServer) StreamConn(conn net.Conn) (net.Conn, error) {
 
 	serverCopyClientConfirmationCode, confirmationError := a.generateClientConfirmationCode()
 	if confirmationError != nil {
-		fmt.Println("DarkStarServer: Error creating a DarkStar connection: ", confirmationError)
-		return nil, confirmationError // ERROR, this means we could not generate the code
+		fmt.Println("DarkStarServer: BlackholeConnection: ", confirmationError)
+		return NewBlackHoleConn(), nil // BLACKHOLE, this means we could not generate the code potentially because we did not receive a valid key
 	}
 
 	if !bytes.Equal(clientConfirmationCode, serverCopyClientConfirmationCode) {
-		fmt.Println("DarkStarServer : Error creating a Darkstar connection: The client confirmation code and the server copy of the client confirmation code are not equal")
+		fmt.Println("DarkStarServer : BlackholeConnection: The client confirmation code and the server copy of the client confirmation code are not equal")
 		return NewBlackHoleConn(), nil // BLACKHOLE
 	}
 
 	serverEphemeralPublicKeyData, pubKeyToBytesError := PublicKeyToBytes(a.serverEphemeralPublicKey)
 	if pubKeyToBytesError != nil {
-		fmt.Println("DarkStarServer: Error creating a DarkStar connection: ", pubKeyToBytesError)
+		fmt.Println("DarkStarServer: BlackholeConnection: ", pubKeyToBytesError)
 		return NewBlackHoleConn(), nil // BLACKHOLE, this means the bytes they sent us were not a public key, probably a probe
 	}
 
@@ -107,13 +107,13 @@ func (a *DarkStarServer) StreamConn(conn net.Conn) (net.Conn, error) {
 
 	sharedKeyServerToClient, sharedKeyServerError := a.createServerToClientSharedKey()
 	if sharedKeyServerError != nil {
-		fmt.Println("DarkStarServer: Error creating a DarkStar connection: ", sharedKeyServerError)
+		fmt.Println("DarkStarServer: BlackholeConnection: ", sharedKeyServerError)
 		return NewBlackHoleConn(), nil // BLACKHOLE, not sure why this would happen
 	}
 
 	sharedKeyClientToServer, sharedKeyClientError := a.createClientToServerSharedKey()
 	if sharedKeyClientError != nil {
-		fmt.Println("DarkStarServer: Error creating a DarkStar connection: ", sharedKeyClientError)
+		fmt.Println("DarkStarServer: BlackholeConnection: ", sharedKeyClientError)
 		return NewBlackHoleConn(), nil // BLACKHOLE, not sure why this would happen
 	}
 
@@ -223,9 +223,9 @@ func (a *DarkStarServer) generateServerConfirmationCode() ([]byte, error) {
 func (a *DarkStarServer) generateClientConfirmationCode() (code []byte, codeError error) {
 	defer func() {
 		if err := recover(); err != nil {
-			fmt.Println("panic occurred in generateClientConfirmationCode:", err)
+			fmt.Println("Failed to create a ClientConfirmationCode:", err)
 			code = nil
-			codeError = errors.New("error occurred in generateClientConfirmationCode")
+			codeError = errors.New("failed to create a ClientConfirmationCode")
 		}
 	}()
 
