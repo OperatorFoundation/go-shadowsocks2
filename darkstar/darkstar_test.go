@@ -2,15 +2,15 @@ package darkstar
 
 import (
 	"crypto/elliptic"
-	"crypto/rand"
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
-	"github.com/OperatorFoundation/go-shadowsocks2/internal"
 	"net"
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/OperatorFoundation/go-shadowsocks2/internal"
 
 	"github.com/aead/ecdh"
 	"github.com/stretchr/testify/assert"
@@ -64,9 +64,8 @@ func TestForShadowSocksTestingMatrix(t *testing.T) {
 	//assert.Equal(t, "test", testString, "test string didnt match")
 }
 
-func TestKeyGen(t *testing.T) {
-	keyExchange := ecdh.Generic(elliptic.P256())
-	clientEphemeralPrivateKey, clientEphemeralPublicKeyPoint, keyError := keyExchange.GenerateKey(rand.Reader)
+func TestDarkstarKeyGen(t *testing.T) {
+	clientEphemeralPrivateKey, clientEphemeralPublicKeyPoint, keyError := generateEvenKeys()
 	if keyError != nil {
 		t.Fail()
 	}
@@ -76,7 +75,31 @@ func TestKeyGen(t *testing.T) {
 		t.Fail()
 	}
 
-	publicKeyBytes, keyByteError := PublicKeyToBytes(clientEphemeralPublicKeyPoint)
+	publicKeyBytes, keyByteError := PublicKeyToDarkstarFormatBytes(clientEphemeralPublicKeyPoint)
+	if keyByteError != nil {
+		t.Fail()
+	}
+
+	privateKeyString := base64.StdEncoding.EncodeToString(privateKeyBytes)
+	fmt.Printf("private key bytes: %s\n", privateKeyString)
+
+	publicKeyString := base64.StdEncoding.EncodeToString(publicKeyBytes)
+	fmt.Printf("public key bytes: %s\n", publicKeyString)
+}
+
+func TestKeychainKeyGen(t *testing.T) {
+	privateKey, publicKey, keyError := generateKeychainKeys()
+	if keyError != nil {
+		t.Fail()
+	}
+
+
+	privateKeyBytes, ok := privateKey.([]byte)
+	if !ok {
+		t.Fail()
+	}
+
+	publicKeyBytes, keyByteError := PublicKeyToKeychainFormatBytes(publicKey)
 	if keyByteError != nil {
 		t.Fail()
 	}
@@ -89,8 +112,8 @@ func TestKeyGen(t *testing.T) {
 }
 
 func TestDarkStar(t *testing.T) {
-	publicKeyString := "6LukZ8KqZLQ7eOdaTVFkBVqMA8NS1AUxwqG17L/kHnQ="
-	privateKeyString := "RaHouPFVOazVSqInoMm8BSO9o/7J493y4cUVofmwXAU="
+	publicKeyString := "AgSTYvjq/4FbVgjkD5B3hfeQ4aYwZ07llfZPo9XN5gtAYiCqKyrCHELiqQjQmwT8qfNHqyTJj0KwzS7b2htQ86xA"
+	privateKeyString := "huNfx28f8TOiY7XtpR71eHQbK5mB6AWx9WujA51UxSs="
 
 	addr := "127.0.0.1:1234"
 
@@ -306,13 +329,13 @@ func TestKeys(t *testing.T) {
 	publicKeyString := "6LukZ8KqZLQ7eOdaTVFkBVqMA8NS1AUxwqG17L/kHnQ="
 
 	publicKeyDecode, _ := base64.StdEncoding.DecodeString(publicKeyString)
-	publicKey := BytesToPublicKey(publicKeyDecode)
+	publicKey := DarkstarFormatBytesToPublicKey(publicKeyDecode)
 	privateKey, _ := base64.StdEncoding.DecodeString(privateKeyString)
 	keyExchange := ecdh.Generic(elliptic.P256())
 	publicKey2 := keyExchange.PublicKey(privateKey)
-	publicKey2Bytes, _ := PublicKeyToBytes(publicKey2)
+	publicKey2Bytes, _ := PublicKeyToDarkstarFormatBytes(publicKey2)
 	publicKey2String := base64.StdEncoding.EncodeToString(publicKey2Bytes)
-	publicKey3, _ := PublicKeyToBytes(publicKey)
+	publicKey3, _ := PublicKeyToDarkstarFormatBytes(publicKey)
 	publicKey3String := base64.StdEncoding.EncodeToString(publicKey3)
 
 	assert.Equal(t, publicKeyString, publicKey2String)
@@ -332,7 +355,7 @@ func TestDarkStarServerBadClientConfirmationCode(t *testing.T) {
 		internal.AddSalt(data)
 	}
 
-	server.clientEphemeralPublicKey = BytesToPublicKey(data)
+	server.clientEphemeralPublicKey = DarkstarFormatBytesToPublicKey(data)
 
 	_, confirmationError := server.generateClientConfirmationCode()
 	if confirmationError != nil {

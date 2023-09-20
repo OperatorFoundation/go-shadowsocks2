@@ -6,8 +6,6 @@ import (
 	"encoding/base64"
 	"flag"
 	"fmt"
-	"github.com/OperatorFoundation/go-shadowsocks2/darkstar"
-	"github.com/aead/ecdh"
 	"io"
 	"log"
 	"net/url"
@@ -17,6 +15,9 @@ import (
 	"strings"
 	"syscall"
 	"time"
+
+	"github.com/OperatorFoundation/go-shadowsocks2/darkstar"
+	"github.com/aead/ecdh"
 
 	"github.com/OperatorFoundation/go-shadowsocks2/core"
 	"github.com/OperatorFoundation/go-shadowsocks2/socks"
@@ -80,12 +81,11 @@ func main() {
 				return
 			}
 
-			serverPersistentPublicKeyBytes, byteError := darkstar.PublicKeyToBytes(serverPersistentPublicKey)
+			serverPersistentPublicKeyBytes, byteError := darkstar.PublicKeyToKeychainFormatBytes(serverPersistentPublicKey)
 			if byteError != nil {
 				return
 			}
 			serverPersistentPrivateKeyBytes := serverPersistentPrivateKey.([]byte)
-
 
 			writeError := os.WriteFile("DarkStarServer.priv", serverPersistentPrivateKeyBytes, 0600)
 			if writeError != nil {
@@ -168,7 +168,7 @@ func main() {
 			if cipherError != nil {
 				log.Fatal(cipherError)
 			}
-			
+
 			keyString := base64.StdEncoding.EncodeToString(key)
 			ciph = darkstar.NewDarkStarClient(keyString, host, port)
 		} else {

@@ -6,7 +6,6 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/elliptic"
-	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/binary"
@@ -36,7 +35,7 @@ func NewDarkStarServer(serverPersistentPrivateKey string, host string, port int)
 	keyExchange := ecdh.Generic(elliptic.P256())
 	serverIdentifier := getServerIdentifier(host, port)
 
-	serverEphemeralPrivateKey, serverEphemeralPublicKey, keyError := keyExchange.GenerateKey(rand.Reader)
+	serverEphemeralPrivateKey, serverEphemeralPublicKey, keyError := generateEvenKeys()
 	if keyError != nil {
 		return nil
 	}
@@ -65,7 +64,7 @@ func (a *DarkStarServer) StreamConn(conn net.Conn) (net.Conn, error) {
 		internal.AddSalt(clientEphemeralPublicKeyBuffer)
 	}
 
-	a.clientEphemeralPublicKey = BytesToPublicKey(clientEphemeralPublicKeyBuffer)
+	a.clientEphemeralPublicKey = DarkstarFormatBytesToPublicKey(clientEphemeralPublicKeyBuffer)
 
 	clientConfirmationCode := make([]byte, confirmationCodeSize)
 	_, confirmationReadError := conn.Read(clientConfirmationCode)
@@ -85,7 +84,7 @@ func (a *DarkStarServer) StreamConn(conn net.Conn) (net.Conn, error) {
 		return NewBlackHoleConn(), nil // BLACKHOLE
 	}
 
-	serverEphemeralPublicKeyData, pubKeyToBytesError := PublicKeyToBytes(a.serverEphemeralPublicKey)
+	serverEphemeralPublicKeyData, pubKeyToBytesError := PublicKeyToDarkstarFormatBytes(a.serverEphemeralPublicKey)
 	if pubKeyToBytesError != nil {
 		fmt.Println("DarkStarServer: BlackholeConnection: ", pubKeyToBytesError)
 		return NewBlackHoleConn(), nil // BLACKHOLE, this means the bytes they sent us were not a public key, probably a probe
@@ -166,12 +165,12 @@ func (a *DarkStarServer) generateSharedKey(personalizationString string) ([]byte
 	ephemeralECDHBytes := p256.ComputeSecret(a.serverEphemeralPrivateKey, a.clientEphemeralPublicKey)
 	persistentECDHBytes := p256.ComputeSecret(a.serverPersistentPrivateKey, a.clientEphemeralPublicKey)
 
-	clientEphemeralPublicKeyBytes, clientKeyToBytesError := PublicKeyToBytes(a.clientEphemeralPublicKey)
+	clientEphemeralPublicKeyBytes, clientKeyToBytesError := PublicKeyToDarkstarFormatBytes(a.clientEphemeralPublicKey)
 	if clientKeyToBytesError != nil {
 		return nil, clientKeyToBytesError
 	}
 
-	serverEphemeralPublicKeyBytes, serverKeyToBytesError := PublicKeyToBytes(a.serverEphemeralPublicKey)
+	serverEphemeralPublicKeyBytes, serverKeyToBytesError := PublicKeyToDarkstarFormatBytes(a.serverEphemeralPublicKey)
 	if serverKeyToBytesError != nil {
 		return nil, serverKeyToBytesError
 	}
@@ -199,12 +198,12 @@ func (a *DarkStarServer) createClientToServerSharedKey() ([]byte, error) {
 func (a *DarkStarServer) generateServerConfirmationCode() ([]byte, error) {
 	p256 := ecdh.Generic(elliptic.P256())
 	ecdhSecret := p256.ComputeSecret(a.serverPersistentPrivateKey, a.clientEphemeralPublicKey)
-	serverPersistentPublicKeyData, serverKeyError := PublicKeyToBytes(a.serverPersistentPublicKey)
+	serverPersistentPublicKeyData, serverKeyError := PublicKeyToKeychainFormatBytes(a.serverPersistentPublicKey)
 	if serverKeyError != nil {
 		return nil, serverKeyError
 	}
 
-	clientEphemeralPublicKeyData, clientKeyError := PublicKeyToBytes(a.clientEphemeralPublicKey)
+	clientEphemeralPublicKeyData, clientKeyError := PublicKeyToDarkstarFormatBytes(a.clientEphemeralPublicKey)
 	if clientKeyError != nil {
 		return nil, clientKeyError
 	}
@@ -240,12 +239,12 @@ func (a *DarkStarServer) generateClientConfirmationCode() (code []byte, codeErro
 
 	ecdhSecret := p256.ComputeSecret(a.serverPersistentPrivateKey, a.clientEphemeralPublicKey)
 
-	serverPersistentPublicKeyData, serverKeyError := PublicKeyToBytes(a.serverPersistentPublicKey)
+	serverPersistentPublicKeyData, serverKeyError := PublicKeyToKeychainFormatBytes(a.serverPersistentPublicKey)
 	if serverKeyError != nil {
 		return nil, serverKeyError
 	}
 
-	clientEphemeralPublicKeyData, clientKeyError := PublicKeyToBytes(a.clientEphemeralPublicKey)
+	clientEphemeralPublicKeyData, clientKeyError := PublicKeyToDarkstarFormatBytes(a.clientEphemeralPublicKey)
 	if clientKeyError != nil {
 		return nil, clientKeyError
 	}
