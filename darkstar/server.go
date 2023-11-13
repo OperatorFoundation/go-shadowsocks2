@@ -9,6 +9,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/binary"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"net"
@@ -248,6 +249,11 @@ func (a *DarkStarServer) generateClientConfirmationCode() (code []byte, codeErro
 	if clientKeyError != nil {
 		return nil, clientKeyError
 	}
+
+	fmt.Printf("ecdhSecret: %s", hex.EncodeToString(ecdhSecret))
+	fmt.Printf("serveridentifier: %s", hex.EncodeToString(a.serverIdentifier))
+	fmt.Printf("serverPersistentPublicKey: %s", hex.EncodeToString(serverPersistentPublicKeyData))
+	fmt.Printf("clientEphemeralPublicKey: %s", hex.EncodeToString(clientEphemeralPublicKeyData))
 
 	hash := sha256.New()
 	hash.Write(ecdhSecret)
