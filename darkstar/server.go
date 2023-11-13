@@ -239,7 +239,7 @@ func (a *DarkStarServer) generateClientConfirmationCode() (code []byte, codeErro
 
 	ecdhSecret := p256.ComputeSecret(a.serverPersistentPrivateKey, a.clientEphemeralPublicKey)
 
-	serverPersistentPublicKeyData, serverKeyError := PublicKeyToKeychainFormatBytes(a.serverPersistentPublicKey)
+	serverPersistentPublicKeyData, serverKeyError := PublicKeyToDarkstarFormatBytes(a.serverPersistentPublicKey)
 	if serverKeyError != nil {
 		return nil, serverKeyError
 	}
