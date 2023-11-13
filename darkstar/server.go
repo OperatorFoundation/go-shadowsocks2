@@ -80,8 +80,8 @@ func (a *DarkStarServer) StreamConn(conn net.Conn) (net.Conn, error) {
 		return NewBlackHoleConn(), nil // BLACKHOLE, this means we could not generate the code potentially because we did not receive a valid key
 	}
 
-	fmt.Printf("client copy: %s", hex.EncodeToString(clientConfirmationCode))
-	fmt.Printf("server copy: %s", hex.EncodeToString(serverCopyClientConfirmationCode))
+	fmt.Printf("client copy: %s\n", hex.EncodeToString(clientConfirmationCode))
+	fmt.Printf("server copy: %s\n", hex.EncodeToString(serverCopyClientConfirmationCode))
 
 	if !bytes.Equal(clientConfirmationCode, serverCopyClientConfirmationCode) {
 		fmt.Println("DarkStarServer : BlackholeConnection: The client confirmation code and the server copy of the client confirmation code are not equal")
