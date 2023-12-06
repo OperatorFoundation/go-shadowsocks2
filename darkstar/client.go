@@ -65,7 +65,7 @@ func (a *DarkStarClient) StreamConn(conn net.Conn) (net.Conn, error) {
 	}
 
 	serverEphemeralPublicKeyBuffer := make([]byte, keySize)
-	_, keyReadError := conn.Read(serverEphemeralPublicKeyBuffer)
+	keyReadError := ReadFully(conn, serverEphemeralPublicKeyBuffer)
 	if keyReadError != nil {
 		return nil, keyReadError
 	}
@@ -73,7 +73,7 @@ func (a *DarkStarClient) StreamConn(conn net.Conn) (net.Conn, error) {
 	a.serverEphemeralPublicKey = DarkstarFormatBytesToPublicKey(serverEphemeralPublicKeyBuffer)
 
 	serverConfirmationCode := make([]byte, confirmationCodeSize)
-	_, confirmationReadError := conn.Read(serverConfirmationCode)
+	confirmationReadError := ReadFully(conn, serverConfirmationCode)
 	if confirmationReadError != nil {
 		return nil, confirmationReadError
 	}

@@ -52,7 +52,7 @@ func NewDarkStarServer(serverPersistentPrivateKey string, host string, port int)
 
 func (a *DarkStarServer) StreamConn(conn net.Conn) (net.Conn, error) {
 	clientEphemeralPublicKeyBuffer := make([]byte, keySize)
-	_, keyReadError := conn.Read(clientEphemeralPublicKeyBuffer)
+	keyReadError := ReadFully(conn, clientEphemeralPublicKeyBuffer)
 	if keyReadError != nil {
 		print("DarkStarServer: Error creating a DarkStar connection: ")
 		println(keyReadError)
@@ -68,7 +68,7 @@ func (a *DarkStarServer) StreamConn(conn net.Conn) (net.Conn, error) {
 	a.clientEphemeralPublicKey = DarkstarFormatBytesToPublicKey(clientEphemeralPublicKeyBuffer)
 
 	clientConfirmationCode := make([]byte, confirmationCodeSize)
-	_, confirmationReadError := conn.Read(clientConfirmationCode)
+	confirmationReadError := ReadFully(conn, clientConfirmationCode)
 	if confirmationReadError != nil {
 		fmt.Println("DarkStarServer: Error creating a DarkStar connection: ", confirmationReadError)
 		return nil, confirmationReadError // ERROR, probably the connection is closed
