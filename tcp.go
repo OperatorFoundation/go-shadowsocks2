@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/OperatorFoundation/go-shadowsocks2/socks"
+	"github.com/OperatorFoundation/go-shadowsocks2/darkstar"
 )
 
 // Create a SOCKS server listening on addr and proxy to server.
@@ -55,7 +56,7 @@ func tcpLocal(addr, server string, shadow func(net.Conn) (net.Conn, error), getA
 					buf := make([]byte, 1)
 					// block here
 					for {
-						_, err := c.Read(buf)
+						err := darkstar.ReadFully(c, buf)
 						if err, ok := err.(net.Error); ok && err.Timeout() {
 							continue
 						}
