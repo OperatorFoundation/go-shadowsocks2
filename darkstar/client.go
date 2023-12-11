@@ -55,11 +55,11 @@ func (a *DarkStarClient) StreamConn(conn net.Conn) (net.Conn, error) {
 		return nil, confirmationError
 	}
 
-	_, keyWriteError := conn.Write(clientEphemeralPublicKeyBytes)
+	keyWriteError := WriteFully(conn, clientEphemeralPublicKeyBytes)
 	if keyWriteError != nil {
 		return nil, keyWriteError
 	}
-	_, confirmationWriteError := conn.Write(clientConfirmationCode)
+	confirmationWriteError := WriteFully(conn, clientConfirmationCode)
 	if confirmationWriteError != nil {
 		return nil, confirmationWriteError
 	}

@@ -7,6 +7,7 @@ import (
 	"io"
 	"net"
 
+	"github.com/OperatorFoundation/go-shadowsocks2/darkstar"
 	"github.com/OperatorFoundation/go-shadowsocks2/internal"
 )
 
@@ -245,7 +246,7 @@ func (c *streamConn) initWriter() error {
 	if err != nil {
 		return err
 	}
-	_, err = c.Conn.Write(salt)
+	err = darkstar.WriteFully(c.Conn, salt)
 	if err != nil {
 		return err
 	}

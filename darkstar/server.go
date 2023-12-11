@@ -96,13 +96,13 @@ func (a *DarkStarServer) StreamConn(conn net.Conn) (net.Conn, error) {
 
 	serverConfirmationCode, _ := a.generateServerConfirmationCode()
 
-	_, keyWriteError := conn.Write(serverEphemeralPublicKeyData)
+	keyWriteError := WriteFully(conn, serverEphemeralPublicKeyData)
 	if keyWriteError != nil {
 		fmt.Println("DarkStarServer: Error creating a DarkStar connection: ", keyWriteError)
 		return nil, keyWriteError // ERROR, the client closed the connection
 	}
 
-	_, confirmationWriteError := conn.Write(serverConfirmationCode)
+	confirmationWriteError := WriteFully(conn, serverConfirmationCode)
 	if confirmationWriteError != nil {
 		fmt.Println("DarkStarServer: Error creating a DarkStar connection: ", confirmationWriteError)
 		return nil, confirmationWriteError // ERROR, the client closed the connection
