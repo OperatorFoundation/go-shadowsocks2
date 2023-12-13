@@ -11,6 +11,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"github.com/OperatorFoundation/go-shadowsocks2/internal"
 	"net"
 
 	"github.com/aead/ecdh"
@@ -55,17 +56,17 @@ func (a *DarkStarClient) StreamConn(conn net.Conn) (net.Conn, error) {
 		return nil, confirmationError
 	}
 
-	keyWriteError := WriteFully(conn, clientEphemeralPublicKeyBytes)
+	keyWriteError := internal.WriteFully(conn, clientEphemeralPublicKeyBytes)
 	if keyWriteError != nil {
 		return nil, keyWriteError
 	}
-	confirmationWriteError := WriteFully(conn, clientConfirmationCode)
+	confirmationWriteError := internal.WriteFully(conn, clientConfirmationCode)
 	if confirmationWriteError != nil {
 		return nil, confirmationWriteError
 	}
 
 	serverEphemeralPublicKeyBuffer := make([]byte, keySize)
-	keyReadError := ReadFully(conn, serverEphemeralPublicKeyBuffer)
+	keyReadError := internal.ReadFully(conn, serverEphemeralPublicKeyBuffer)
 	if keyReadError != nil {
 		return nil, keyReadError
 	}
@@ -73,7 +74,7 @@ func (a *DarkStarClient) StreamConn(conn net.Conn) (net.Conn, error) {
 	a.serverEphemeralPublicKey = DarkstarFormatBytesToPublicKey(serverEphemeralPublicKeyBuffer)
 
 	serverConfirmationCode := make([]byte, confirmationCodeSize)
-	confirmationReadError := ReadFully(conn, serverConfirmationCode)
+	confirmationReadError := internal.ReadFully(conn, serverConfirmationCode)
 	if confirmationReadError != nil {
 		return nil, confirmationReadError
 	}

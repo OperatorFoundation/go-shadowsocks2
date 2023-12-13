@@ -1,4 +1,4 @@
-package darkstar
+package internal
 
 import "net"
 
