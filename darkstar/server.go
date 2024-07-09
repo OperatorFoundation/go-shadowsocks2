@@ -12,10 +12,9 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"net"
-
 	"github.com/OperatorFoundation/go-shadowsocks2/internal"
 	"github.com/aead/ecdh"
+	"net"
 )
 
 type DarkStarServer struct {
@@ -33,6 +32,7 @@ func NewDarkStarServer(serverPersistentPrivateKey string, host string, port int)
 		return nil
 	}
 
+	trimmedPrivateKey := privateKey[1:]
 	keyExchange := ecdh.Generic(elliptic.P256())
 	serverIdentifier := getServerIdentifier(host, port)
 
@@ -42,8 +42,8 @@ func NewDarkStarServer(serverPersistentPrivateKey string, host string, port int)
 	}
 
 	return &DarkStarServer{
-		serverPersistentPublicKey:  keyExchange.PublicKey(privateKey),
-		serverPersistentPrivateKey: privateKey,
+		serverPersistentPublicKey:  keyExchange.PublicKey(trimmedPrivateKey),
+		serverPersistentPrivateKey: trimmedPrivateKey,
 		serverEphemeralPublicKey:   serverEphemeralPublicKey,
 		serverEphemeralPrivateKey:  serverEphemeralPrivateKey,
 		serverIdentifier:           serverIdentifier,
